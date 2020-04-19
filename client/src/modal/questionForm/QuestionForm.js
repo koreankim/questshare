@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Button, Modal, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
+const CONFIG = require('../../config.json')
+
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -28,7 +30,7 @@ const DynamicFieldSet = () => {
           <div>
             {fields.map((field, index) => (
               <Form.Item
-                {...(formItemLayoutWithOutLabel)}
+                {...formItemLayoutWithOutLabel}
                 label={index === 0 ? "Options:" : ""}
                 required={false}
                 key={field.key}
@@ -41,19 +43,22 @@ const DynamicFieldSet = () => {
                       required: true,
                       whitespace: true,
                       message: "Please fill or delete this option.",
-                    },          
+                    },
                     () => ({
                       validator(rule, value) {
                         if (!value || value.length <= 100) {
                           return Promise.resolve();
                         }
-                        return Promise.reject('Option is too long!');
+                        return Promise.reject("Option is too long!");
                       },
                     }),
                   ]}
                   noStyle
                 >
-                  <Input placeholder="option (max 100 characters)" style={{ width: "60%" }} />
+                  <Input
+                    placeholder="option (max 100 characters)"
+                    style={{ width: "60%" }}
+                  />
                 </Form.Item>
                 {fields.length > 1 ? (
                   <MinusCircleOutlined
@@ -93,7 +98,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
       okText="Create"
       cancelText="Cancel"
       onCancel={() => {
-        onCancel(form)
+        onCancel(form);
       }}
       onOk={() => {
         form
@@ -107,11 +112,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
           });
       }}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        name="question_form"
-      >
+      <Form form={form} layout="vertical" name="question_form">
         <Form.Item
           name="question"
           label="Your Question"
@@ -125,9 +126,9 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
                 if (!value || value.length <= 300) {
                   return Promise.resolve();
                 }
-                return Promise.reject('Question is too long!');
+                return Promise.reject("Question is too long!");
               },
-            })
+            }),
           ]}
         >
           <Input.TextArea />
@@ -146,9 +147,34 @@ export const CreateQuestionButton = () => {
   const onCancel = (form) => {
     form.resetFields();
     setVisible(false);
-  }
+  };
 
   const onCreate = (values) => {
+    const requestOptions = {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: values['question'], options : values['options']}),
+    };
+    fetch(CONFIG['proxy'] + "/createquestion", requestOptions)
+      .then(async (response) => {
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.log(response) // TODO: Remove later
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }
+        return data;
+      })
+      .then(responseJson => {
+        console.log(responseJson)
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
     console.log("Received values of form: ", values);
     setVisible(false);
   };

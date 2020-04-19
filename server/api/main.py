@@ -1,12 +1,18 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from .extensions import mongo
 
 main = Blueprint('main', __name__)
 
-@main.route('/')
-def index():
-    # Remove this test sample later
-    test_collection = mongo.db.test
-    test_collection.insert({'name' : 'test-user'})
-    return jsonify(name='test-user')
+@main.route('/createquestion', methods=['POST'])
+def create_question():
+    question_collection = mongo.db.questions
+
+    data = request.get_json()
+
+    question_collection.insert({
+        'question' : data['title'],
+        'options' : data['options']
+    })
+
+    return 'Done', 201
