@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, notification, Modal, Form, Input } from "antd";
+import { Button, Cascader, notification, Modal, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { RadiusUprightOutlined } from "@ant-design/icons";
 
@@ -18,6 +18,42 @@ const formItemLayoutWithOutLabel = {
     xs: { span: 24, offset: 0 },
     sm: { span: 20, offset: 4 },
   },
+};
+
+const ExpirationSelectMenu = () => {
+  return (
+    <Form.Item
+      name="disableTime"
+      label="Disable After:"
+      rules={[
+        {
+          required: true,
+          message: "Disable time is required!",
+        },
+      ]}
+    >
+      <Cascader
+        options={[
+          {
+            value: 1,
+            label: "1 minute",
+          },
+          {
+            value: 5,
+            label: "5 minute",
+          },
+          {
+            value: 10,
+            label: "10 minutes",
+          },
+          {
+            value: 30,
+            label: "30 minutes",
+          },
+        ]}
+      />
+    </Form.Item>
+  );
 };
 
 const DynamicFieldSet = () => {
@@ -40,7 +76,7 @@ const DynamicFieldSet = () => {
                     {
                       required: true,
                       whitespace: true,
-                      max: CONFIG['max_options_input_length'],
+                      max: CONFIG["max_options_input_length"],
                       message: "Invalid inputs for option!",
                     },
                   ]}
@@ -66,9 +102,15 @@ const DynamicFieldSet = () => {
               <Button
                 type="dashed"
                 onClick={() => {
-                  if (fields.length >= CONFIG['free_tier_max_options']) {
-                    openNotification('topRight', 'Too many options!', 'You may only have ('+ CONFIG['free_tier_max_options'] + ') options per question.')  
-                    return <RadiusUprightOutlined/>
+                  if (fields.length >= CONFIG["free_tier_max_options"]) {
+                    openNotification(
+                      "topRight",
+                      "Too many options!",
+                      "You may only have (" +
+                        CONFIG["free_tier_max_options"] +
+                        ") options per question."
+                    );
+                    return <RadiusUprightOutlined />;
                   }
                   add();
                 }}
@@ -84,13 +126,35 @@ const DynamicFieldSet = () => {
   );
 };
 
+const QuestionTopicSet = () => {
+  return (
+    <Form.Item
+      name="question"
+      label="Your Question (max 250 characters)"
+      rules={[
+        {
+          required: true,
+          max: CONFIG["max_question_input_length"],
+          message: "Invalid inputs for question!",
+        },
+      ]}
+    >
+      <Input.TextArea />
+    </Form.Item>
+  );
+};
+
 const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
   const [form] = Form.useForm();
 
   const onOk = (onCreate) => {
     if (form.getFieldsValue()["options"] == undefined) {
-      openNotification('topRight', `Your form is incomplete!`, "You must have at least (1) option before submitting.");
-      return <RadiusUprightOutlined />
+      openNotification(
+        "topRight",
+        `Your form is incomplete!`,
+        "You must have at least (1) option before submitting."
+      );
+      return <RadiusUprightOutlined />;
     }
 
     form
@@ -102,7 +166,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
       .catch((info) => {
         console.log("Validate Failed:", info); //Get rid of later
       });
-  }
+  };
 
   return (
     <Modal
@@ -120,23 +184,9 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
       }}
     >
       <Form form={form} layout="vertical" name="question_form">
-        <Form.Item
-          name="question" 
-          label="Your Question (max 250 characters)"
-          rules={[
-            {
-              required: true,
-              whitespace: true,
-              max: CONFIG['max_question_input_length'],
-              message: "Invalid inputs for question!",
-            },
-          ]}
-        >
-          <Input.TextArea />
-        </Form.Item>
-        <Form.Item>
-          <DynamicFieldSet />
-        </Form.Item>
+        <QuestionTopicSet />
+        <ExpirationSelectMenu />
+        <DynamicFieldSet />
       </Form>
     </Modal>
   );
@@ -159,6 +209,7 @@ export const CreateQuestionButton = () => {
       body: JSON.stringify({
         question: values["question"],
         options: values["options"],
+        disableTime: values["disableTime"]
       }),
     };
     fetch(CONFIG["proxy"] + "/createquestion", requestOptions)
