@@ -1,18 +1,16 @@
 import React, { useState } from "react";
-import { Button, Modal, Form, Input } from "antd";
+import { Button, notification, Modal, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { RadiusUprightOutlined } from "@ant-design/icons";
 
-const CONFIG = require('../../config.json')
+const CONFIG = require("../../config.json");
 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 4 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 20 },
-  },
+const openNotification = (placement, msg, desc) => {
+  notification.info({
+    message: msg,
+    description: desc,
+    placement,
+  });
 };
 
 const formItemLayoutWithOutLabel = {
@@ -30,10 +28,10 @@ const DynamicFieldSet = () => {
           <div>
             {fields.map((field, index) => (
               <Form.Item
-                {...formItemLayoutWithOutLabel}
                 label={index === 0 ? "Options:" : ""}
-                required={false}
+                required={true}
                 key={field.key}
+                {...formItemLayoutWithOutLabel}
               >
                 <Form.Item
                   {...field}
@@ -42,16 +40,9 @@ const DynamicFieldSet = () => {
                     {
                       required: true,
                       whitespace: true,
-                      message: "Please fill or delete this option.",
+                      max: CONFIG['max_options_input_length'],
+                      message: "Invalid inputs for option!",
                     },
-                    () => ({
-                      validator(rule, value) {
-                        if (!value || value.length <= 100) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject("Option is too long!");
-                      },
-                    }),
                   ]}
                   noStyle
                 >
@@ -71,10 +62,14 @@ const DynamicFieldSet = () => {
                 ) : null}
               </Form.Item>
             ))}
-            <Form.Item>
+            <Form.Item {...formItemLayoutWithOutLabel}>
               <Button
                 type="dashed"
                 onClick={() => {
+                  if (fields.length >= CONFIG['free_tier_max_options']) {
+                    openNotification('topRight', 'Too many options!', 'You may only have ('+ CONFIG['free_tier_max_options'] + ') options per question.')  
+                    return <RadiusUprightOutlined/>
+                  }
                   add();
                 }}
                 style={{ width: "60%" }}
@@ -91,44 +86,49 @@ const DynamicFieldSet = () => {
 
 const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
   const [form] = Form.useForm();
+
+  const onOk = (onCreate) => {
+    if (form.getFieldsValue()["options"] == undefined) {
+      openNotification('topRight', `Your form is incomplete!`, "You must have at least (1) option before submitting.");
+      return <RadiusUprightOutlined />
+    }
+
+    form
+      .validateFields()
+      .then((values) => {
+        form.resetFields();
+        onCreate(values);
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info); //Get rid of later
+      });
+  }
+
   return (
     <Modal
       visible={visible}
       title="Create a New Question"
       okText="Create"
+      width="600px"
       cancelText="Cancel"
       onCancel={() => {
         onCancel(form);
       }}
       onOk={() => {
-        form
-          .validateFields()
-          .then((values) => {
-            form.resetFields();
-            onCreate(values);
-          })
-          .catch((info) => {
-            console.log("Validate Failed:", info); //Get rid of later
-          });
+        onOk(onCreate);
       }}
     >
       <Form form={form} layout="vertical" name="question_form">
         <Form.Item
-          name="question"
-          label="Your Question"
+          name="question" 
+          label="Your Question (max 250 characters)"
           rules={[
             {
               required: true,
-              message: "A question is required!",
+              whitespace: true,
+              max: CONFIG['max_question_input_length'],
+              message: "Invalid inputs for question!",
             },
-            () => ({
-              validator(rule, value) {
-                if (!value || value.length <= 300) {
-                  return Promise.resolve();
-                }
-                return Promise.reject("Question is too long!");
-              },
-            }),
           ]}
         >
           <Input.TextArea />
@@ -152,25 +152,28 @@ export const CreateQuestionButton = () => {
   const onCreate = (values) => {
     const requestOptions = {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title: values['question'], options : values['options']}),
+      body: JSON.stringify({
+        question: values["question"],
+        options: values["options"],
+      }),
     };
-    fetch(CONFIG['proxy'] + "/createquestion", requestOptions)
+    fetch(CONFIG["proxy"] + "/createquestion", requestOptions)
       .then(async (response) => {
         const data = await response.json();
 
         if (!response.ok) {
-          console.log(response) // TODO: Remove later
+          console.log(response); // TODO: Remove later
           // get error message from body or default to response status
           const error = (data && data.message) || response.status;
           return Promise.reject(error);
         }
         return data;
       })
-      .then(responseJson => {
-        console.log(responseJson)
+      .then((responseJson) => {
+        console.log(responseJson);
       })
       .catch((error) => {
         console.error("There was an error!", error);

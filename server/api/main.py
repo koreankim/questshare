@@ -11,7 +11,7 @@ def create_question():
     data = request.get_json()
 
     question_collection.insert({
-        'question' : data['title'],
+        'question' : data['question'],
         'options' : data['options']
     })
 
