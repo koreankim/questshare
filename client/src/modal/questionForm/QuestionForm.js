@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { Button, Cascader, notification, Modal, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { RadiusUprightOutlined } from "@ant-design/icons";
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { CopyOutlined } from "@ant-design/icons";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const CONFIG = require("../../config.json");
 
-const openNotification = (placement, msg, desc) => {
-  notification.info({
+const openNotification = (msg, desc, duration) => {
+  const args = {
     message: msg,
     description: desc,
-    placement,
-  });
+    duration: duration,
+  };
+  notification.open(args);
 };
 
 const formItemLayoutWithOutLabel = {
@@ -105,13 +106,13 @@ const DynamicFieldSet = () => {
                 onClick={() => {
                   if (fields.length >= CONFIG["free_tier_max_options"]) {
                     openNotification(
-                      "topRight",
                       "Too many options!",
                       "You may only have (" +
                         CONFIG["free_tier_max_options"] +
-                        ") options per question."
+                        ") options per question.",
+                      3
                     );
-                    return <RadiusUprightOutlined />;
+                    return;
                   }
                   add();
                 }}
@@ -151,11 +152,11 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
   const onOk = (onCreate) => {
     if (form.getFieldsValue()["options"] == undefined) {
       openNotification(
-        "topRight",
         `Your form is incomplete!`,
-        "You must have at least (1) option before submitting."
+        "You must have at least (1) option before submitting.",
+        3
       );
-      return <RadiusUprightOutlined />;
+      return;
     }
 
     form
@@ -194,15 +195,17 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
 };
 
 export const QuestionFormUrlPopup = (data) => {
+  const q_url = window.location.hostname + "/" + data + "/q";
+
   openNotification(
-    "topRight",
     `Your URL`,
-    <CopyToClipboard text={window.location.hostname + '/' + data + '/q'}>
-      <button>Copy to clipboard</button>
-    </CopyToClipboard>
+    <CopyToClipboard text={q_url}>
+      <span>{q_url} <CopyOutlined style={{ fontSize: '16px'}}/></span>
+    </CopyToClipboard>,
+    0
   );
-  return <RadiusUprightOutlined />;
-}
+  return;
+};
 
 export const CreateQuestionButton = () => {
   const [visible, setVisible] = useState(false);
@@ -221,7 +224,7 @@ export const CreateQuestionButton = () => {
       body: JSON.stringify({
         question: values["question"],
         options: values["options"],
-        disableTime: values["disableTime"]
+        disableTime: values["disableTime"],
       }),
     };
     fetch(CONFIG["proxy"] + "/createquestion", requestOptions)
@@ -235,7 +238,7 @@ export const CreateQuestionButton = () => {
         return data;
       })
       .then((data) => {
-        return QuestionFormUrlPopup(data)
+        return QuestionFormUrlPopup(data);
       })
       .catch((error) => {
         console.error("There was an error!", error);
