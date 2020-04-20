@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Cascader, notification, Modal, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { RadiusUprightOutlined } from "@ant-design/icons";
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const CONFIG = require("../../config.json");
 
@@ -192,6 +193,17 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
   );
 };
 
+export const QuestionFormUrlPopup = (data) => {
+  openNotification(
+    "topRight",
+    `Your URL`,
+    <CopyToClipboard text={window.location.hostname + '/' + data + '/q'}>
+      <button>Copy to clipboard</button>
+    </CopyToClipboard>
+  );
+  return <RadiusUprightOutlined />;
+}
+
 export const CreateQuestionButton = () => {
   const [visible, setVisible] = useState(false);
 
@@ -215,22 +227,19 @@ export const CreateQuestionButton = () => {
     fetch(CONFIG["proxy"] + "/createquestion", requestOptions)
       .then(async (response) => {
         const data = await response.json();
-
         if (!response.ok) {
-          console.log(response); // TODO: Remove later
           // get error message from body or default to response status
           const error = (data && data.message) || response.status;
           return Promise.reject(error);
         }
         return data;
       })
-      .then((responseJson) => {
-        console.log(responseJson);
+      .then((data) => {
+        return QuestionFormUrlPopup(data)
       })
       .catch((error) => {
         console.error("There was an error!", error);
       });
-    console.log("Received values of form: ", values);
     setVisible(false);
   };
 
