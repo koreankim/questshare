@@ -111,6 +111,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
       okText="Create"
       width="600px"
       cancelText="Cancel"
+      maskClosable={false}
       onCancel={() => {
         onCancel(form);
       }}
