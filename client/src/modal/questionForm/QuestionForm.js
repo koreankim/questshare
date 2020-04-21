@@ -195,10 +195,10 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
 };
 
 export const QuestionFormUrlPopup = (data) => {
-  const q_url = window.location.hostname + "/" + data + "/q";
+  const q_url = window.location.hostname + "/questions/" + data;
 
   openNotification(
-    `Your URL`,
+    `Your Shareable URL`,
     <CopyToClipboard text={q_url}>
       <span>{q_url} <CopyOutlined style={{ fontSize: '16px'}}/></span>
     </CopyToClipboard>,
