@@ -7,6 +7,8 @@ from datetime import datetime
 
 main = Blueprint('main', __name__)
 
+UUID_LENGTH = 36
+
 @main.route('/createquestion', methods=['POST'])
 def create_question():
     question_collection = mongo.db.questions
@@ -36,6 +38,11 @@ def get_questions():
 def get_question(uuid):
     question_collection = mongo.db.questions
 
-    data = dumps(question_collection.find_one({"_uuid": UUID(uuid)}))
+    new_uuid = None
+
+    if (len(uuid) >= UUID_LENGTH):
+        new_uuid = UUID(uuid)
+        
+    data = dumps(question_collection.find_one({"_uuid": new_uuid}))
 
     return data
