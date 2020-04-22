@@ -1,6 +1,6 @@
 const CONFIG = require("../../config.json");
 
-export const fetchDataWithOptions = async (path, requestOptions) => {
+export const sendDataWithOptions = async (path, requestOptions) => {
   const response = await fetch(CONFIG["proxy"] + path, requestOptions);
   const data = await response.json();
   if (!response.ok) {
@@ -11,7 +11,7 @@ export const fetchDataWithOptions = async (path, requestOptions) => {
   return data;
 };
 
-export const fetchData = async (path) => {
+export const sendData = async (path) => {
   const response = await fetch(CONFIG["proxy"] + path);
   const data = await response.json();
   if (!response.ok) {

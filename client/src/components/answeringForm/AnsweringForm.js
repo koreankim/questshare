@@ -1,7 +1,7 @@
 import React from "react";
 import { Spin, Radio, Form, Button } from "antd";
 import Error from "../error/Error";
-import { fetchData } from "../../utils/api/Api";
+import { sendData } from "../../utils/api/Api";
 
 const CONFIG = require("../../config.json");
 
@@ -9,11 +9,9 @@ class AnsweringForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      uuid: props.uuid,
       disabled: false,
       value: 0,
-      q_data: {},
-      loading: true,
+      q_data: props.q_data,
     };
   }
 
@@ -30,30 +28,6 @@ class AnsweringForm extends React.Component {
     lineHeight: "30px",
     fontSize: "11pt",
     whiteSpace: "normal",
-  };
-
-  fetchData = () => {
-    fetch(CONFIG["proxy"] + "/questions/" + this.props.uuid)
-      .then(async (response) => {
-        const data = await response.json();
-
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }
-
-        return data;
-      })
-      .then((data) => {
-        this.setState({
-          q_data: JSON.parse(data),
-          loading: false,
-        });
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
   };
 
   format_question = () => {
@@ -108,10 +82,6 @@ class AnsweringForm extends React.Component {
   };
 
   format_form = () => {
-    if (this.state.loading === true) {
-      return <Spin />;
-    }
-
     if (
       this.state.q_data == null ||
       Object.entries(this.state.q_data).length === 0
@@ -151,7 +121,7 @@ class AnsweringForm extends React.Component {
 
   onFinish = (values) => {
     // TODO: Make into a post call to post ip + choice to ensure IP uniqueness?
-    fetchData(window.location.pathname + "/choice/" + this.state.value)
+    sendData(window.location.pathname + "/choice/" + this.state.value)
       .then(() => {
         this.setState({
           disabled: true,
@@ -160,10 +130,6 @@ class AnsweringForm extends React.Component {
       .catch((error) => {
         console.error("There was an error!", error);
       });
-  };
-
-  componentDidMount = () => {
-    this.fetchData();
   };
 
   render() {

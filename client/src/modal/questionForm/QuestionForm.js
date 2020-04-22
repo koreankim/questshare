@@ -4,7 +4,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { CopyOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { fetchDataWithOptions } from "../../utils/api/Api"
+import { sendDataWithOptions } from "../../utils/api/Api"
 import { openNotification } from "../notification/Notification"
 
 const CONFIG = require("../../config.json");
@@ -228,7 +228,7 @@ export const CreateQuestionButton = () => {
         disableTime: values["disableTime"],
       }),
     };
-    fetchDataWithOptions("/createquestion", requestOptions)
+    sendDataWithOptions("/createquestion", requestOptions)
       .then((data) => {
         return QuestionFormUrlPopup(data);
       })
