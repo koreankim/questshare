@@ -3,19 +3,20 @@ import { Radio, Form, Button } from "antd";
 
 const CONFIG = require("../../config.json");
 
-const radioStyle = {
-  display: "block",
-  height: "30px",
-  lineHeight: "30px",
-  fontSize: "12pt",
-};
-
 class AnsweringForm extends React.Component {
   formItemLayout = {
     wrapperCol: {
       xs: { span: 24, offset: 0 },
       sm: { span: 20, offset: 4 },
     },
+  };
+
+  radioStyle = {
+    display: "block",
+    height: "30px",
+    lineHeight: "30px",
+    fontSize: "11pt",
+    whiteSpace: "normal"
   };
 
   constructor(props) {
@@ -55,7 +56,7 @@ class AnsweringForm extends React.Component {
     return (
       <Form.Item label="Question:">
         <strong>
-          <span className="ant-form-text" style={{ fontSize: "15pt" }}>
+          <span className="ant-form-text" style={{ fontSize: "13pt" }}>
             "{this.state.q_data["_question"]}"
           </span>
         </strong>
@@ -71,9 +72,24 @@ class AnsweringForm extends React.Component {
         onChange={this.onChange}
         value={this.state.value}
       >
-        <Radio.Group>{this.createRadioOptions(radioStyle)}</Radio.Group>
+        <Radio.Group>{this.createRadioOptions(this.radioStyle)}</Radio.Group>
       </Form.Item>
     );
+  };
+
+  createRadioOptions = (style) => {
+    let table = [];
+    let options = this.state.q_data["_options"];
+
+    for (let i = 0; i < options.length; i++) {
+      table.push(
+        <Radio style={style} value={i} key={i}>
+          {options[i]}
+        </Radio>
+      );
+    }
+
+    return table;
   };
 
   format_form = () => {
@@ -106,21 +122,6 @@ class AnsweringForm extends React.Component {
 
   onFinish = (values) => {
     console.log("Received values of form: ", values);
-  };
-
-  createRadioOptions = (style) => {
-    let table = [];
-    let options = this.state.q_data["_options"];
-
-    for (let i = 0; i < options.length; i++) {
-      table.push(
-        <Radio style={style} value={i} key={i}>
-          {options[i]}
-        </Radio>
-      );
-    }
-
-    return table;
   };
 
   render() {
