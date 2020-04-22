@@ -1,5 +1,5 @@
 import React from "react";
-import { Radio, Form, Button } from "antd";
+import { Spin, Radio, Form, Button } from "antd";
 import Error from "../error/Error";
 
 const CONFIG = require("../../config.json");
@@ -11,6 +11,7 @@ class AnsweringForm extends React.Component {
       disabled: false,
       value: 0,
       q_data: {},
+      loading: true,
     };
   }
 
@@ -47,6 +48,7 @@ class AnsweringForm extends React.Component {
       .then((data) => {
         this.setState({
           q_data: JSON.parse(data),
+          loading: false,
         });
       })
       .catch((error) => {
@@ -106,6 +108,10 @@ class AnsweringForm extends React.Component {
   };
 
   format_form = () => {
+    if (this.state.loading === true) {
+      return <Spin />;
+    }
+    
     if (
       this.state.q_data == null ||
       Object.entries(this.state.q_data).length === 0
@@ -144,8 +150,10 @@ class AnsweringForm extends React.Component {
   };
 
   onFinish = (values) => {
-      // TODO: Make into a post call to post ip + choice to ensure IP uniqueness?
-    fetch(CONFIG["proxy"] + window.location.pathname + "/choice/" + this.state.value)
+    // TODO: Make into a post call to post ip + choice to ensure IP uniqueness?
+    fetch(
+      CONFIG["proxy"] + window.location.pathname + "/choice/" + this.state.value
+    )
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) {
@@ -156,9 +164,9 @@ class AnsweringForm extends React.Component {
         return data;
       })
       .then(() => {
-          this.setState({
-              disabled: true
-          })
+        this.setState({
+          disabled: true,
+        });
       })
       .catch((error) => {
         console.error("There was an error!", error);
