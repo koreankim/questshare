@@ -3,6 +3,13 @@ import { Radio, Form, Button } from "antd";
 
 const CONFIG = require("../../config.json");
 
+const radioStyle = {
+  display: "block",
+  height: "30px",
+  lineHeight: "30px",
+  fontSize: "12pt",
+};
+
 class AnsweringForm extends React.Component {
   formItemLayout = {
     wrapperCol: {
@@ -44,41 +51,45 @@ class AnsweringForm extends React.Component {
       });
   };
 
-  format_question = () => {};
+  format_question = () => {
+    return (
+      <Form.Item label="Question:">
+        <strong>
+          <span className="ant-form-text" style={{ fontSize: "15pt" }}>
+            "{this.state.q_data["_question"]}"
+          </span>
+        </strong>
+      </Form.Item>
+    );
+  };
+
+  format_options = () => {
+    return (
+      <Form.Item
+        name="options"
+        label="Options:"
+        onChange={this.onChange}
+        value={this.state.value}
+      >
+        <Radio.Group>{this.createRadioOptions(radioStyle)}</Radio.Group>
+      </Form.Item>
+    );
+  };
 
   format_form = () => {
-    if (Object.entries(this.state.q_data).length === 0) {
+    if (this.state.q_data == null || Object.entries(this.state.q_data).length === 0) {
       return <div>No question with that identifier exists!</div>;
     }
 
-    const radioStyle = {
-      display: "block",
-      height: "30px",
-      lineHeight: "30px",
-    };
     return (
       <Form
         name="submission_form"
         {...this.formItemLayout}
         onFinish={this.onFinish}
-        initialValues={{
-          ["input-number"]: 3,
-          ["checkbox-group"]: ["A", "B"],
-          rate: 3.5,
-        }}
       >
-        <Form.Item label="Question:">
-          <span className="ant-form-text">"{this.state.q_data["_question"]}"</span>
-        </Form.Item>
-        <Form.Item
-          name="options"
-          label="Options:"
-          onChange={this.onChange}
-          value={this.state.value}
-        >
-          <Radio.Group>{this.createRadioOptions(radioStyle)}</Radio.Group>
-        </Form.Item>
-        <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
+        {this.format_question()}
+        {this.format_options()}
+        <Form.Item wrapperCol={{ span: 12, offset: 6 }} style={{ textAlign: "center" }}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>

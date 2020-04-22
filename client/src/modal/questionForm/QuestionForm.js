@@ -200,7 +200,7 @@ export const QuestionFormUrlPopup = (data) => {
   openNotification(
     `Your Shareable URL`,
     <CopyToClipboard text={q_url}>
-      <span>{q_url} <CopyOutlined style={{ fontSize: '16px'}}/></span>
+      <span>{q_url} <CopyOutlined style={{ fontSize: '14px'}}/></span>
     </CopyToClipboard>,
     0
   );
@@ -247,8 +247,12 @@ export const CreateQuestionButton = () => {
   };
 
   return (
-    <div>
+    <div style={{ textAlign: "center" }}>
+      <div>
+        <strong>Reminder</strong>: All questions automatically expire after <strong>7</strong> days!
+      </div>
       <Button
+        style={{ margin: "25px 0px" }}
         type="primary"
         onClick={() => {
           setVisible(true);
@@ -256,7 +260,7 @@ export const CreateQuestionButton = () => {
       >
         New Question
       </Button>
-      <CreateQuestionForm
+      <CreateQuestionForm 
         visible={visible}
         onCreate={onCreate}
         onCancel={onCancel}

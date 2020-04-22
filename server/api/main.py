@@ -20,8 +20,8 @@ def create_question():
     question_collection.insert_one({
         '_question' : data['question'],
         '_options' : data['options'],
-        '_date_created': datetime.utcnow(),
-        '_uuid': uuidGen
+        '_uuid': uuidGen,
+        '_createdAt': datetime.utcnow(),
     })
 
     return jsonify(uuidGen)
@@ -46,3 +46,11 @@ def get_question(uuid):
     data = dumps(question_collection.find_one({"_uuid": new_uuid}))
 
     return jsonify(data)
+
+@main.before_request
+def ttl_collection():
+    index_name = "_createdAt"
+    question_collection = mongo.db.questions
+    if index_name not in question_collection.index_information():
+        seven_days_in_seconds = 604800
+        question_collection.create_index( "_createdAt" , expireAfterSeconds = seven_days_in_seconds)
