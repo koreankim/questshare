@@ -1,6 +1,6 @@
 import React from "react";
 import { Radio, Form, Button } from "antd";
-import Error from "../error/Error"
+import Error from "../error/Error";
 
 const CONFIG = require("../../config.json");
 
@@ -74,11 +74,11 @@ class AnsweringForm extends React.Component {
         onChange={this.onChange}
         value={this.state.value}
         rules={[
-            {
-              required: true,
-              message: "Select one of the options before submitting",
-            },
-          ]}
+          {
+            required: true,
+            message: "Select one of the options before submitting",
+          },
+        ]}
       >
         <Radio.Group>{this.createRadioOptions(this.radioStyle)}</Radio.Group>
       </Form.Item>
@@ -88,11 +88,16 @@ class AnsweringForm extends React.Component {
   createRadioOptions = (style) => {
     let table = [];
     let options = this.state.q_data["_options"];
-
+    console.log(this.state.q_data);
     for (let i = 0; i < options.length; i++) {
       table.push(
-        <Radio style={style} value={i} key={i} disabled={this.state.disabled}>
-          {options[i]}
+        <Radio
+          style={style}
+          value={options[i]["choice"]}
+          key={options[i]["choice"]}
+          disabled={this.state.disabled}
+        >
+          {options[i]["text"]} - <strong>{options[i]["votes"]}</strong>
         </Radio>
       );
     }
@@ -120,7 +125,11 @@ class AnsweringForm extends React.Component {
           wrapperCol={{ span: 12, offset: 6 }}
           style={{ textAlign: "center" }}
         >
-          <Button type="primary" htmlType="submit">
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={this.state.disabled}
+          >
             Submit
           </Button>
         </Form.Item>
@@ -135,7 +144,25 @@ class AnsweringForm extends React.Component {
   };
 
   onFinish = (values) => {
-    console.log("Received values of form: ", values);
+      // TODO: Make into a post call to post ip + choice to ensure IP uniqueness?
+    fetch(CONFIG["proxy"] + window.location.pathname + "/choice/" + this.state.value)
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }
+        return data;
+      })
+      .then(() => {
+          this.setState({
+              disabled: true
+          })
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
   };
 
   render() {
