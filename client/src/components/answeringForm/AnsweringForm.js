@@ -1,5 +1,6 @@
 import React from "react";
 import { Radio, Form, Button } from "antd";
+import Error from "../error/Error"
 
 const CONFIG = require("../../config.json");
 
@@ -104,7 +105,7 @@ class AnsweringForm extends React.Component {
       this.state.q_data == null ||
       Object.entries(this.state.q_data).length === 0
     ) {
-      return <div>No question with that identifier exists!</div>;
+      return <Error />;
     }
 
     return (
