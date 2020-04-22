@@ -5,7 +5,7 @@ import { CopyOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { fetchDataWithOptions } from "../../utils/api/Api"
-import { openNotification } from "../../modal/Notification/Notification"
+import { openNotification } from "../notification/Notification"
 
 const CONFIG = require("../../config.json");
 
