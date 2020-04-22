@@ -30,7 +30,7 @@ class AnsweringForm extends React.Component {
     whiteSpace: "normal",
   };
 
-  componentDidMount = () => {
+  fetchData = () => {
     const { uuid } = this.props.match.params;
 
     fetch(CONFIG["proxy"] + "/questions/" + uuid)
@@ -54,6 +54,10 @@ class AnsweringForm extends React.Component {
       .catch((error) => {
         console.error("There was an error!", error);
       });
+  };
+
+  componentDidMount = () => {
+    this.fetchData()
   };
 
   format_question = () => {
@@ -90,7 +94,7 @@ class AnsweringForm extends React.Component {
   createRadioOptions = (style) => {
     let table = [];
     let options = this.state.q_data["_options"];
-    console.log(this.state.q_data);
+
     for (let i = 0; i < options.length; i++) {
       table.push(
         <Radio
@@ -111,7 +115,7 @@ class AnsweringForm extends React.Component {
     if (this.state.loading === true) {
       return <Spin />;
     }
-    
+
     if (
       this.state.q_data == null ||
       Object.entries(this.state.q_data).length === 0
