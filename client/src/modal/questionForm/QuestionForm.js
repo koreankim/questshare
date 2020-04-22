@@ -1,21 +1,13 @@
 import React, { useState } from "react";
-import { Button, Cascader, notification, Modal, Form, Input } from "antd";
+import { Button, Cascader, Modal, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { CopyOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { fetchDataWithOptions } from "../../utils/api/Api"
+import { openNotification } from "../../modal/Notification/Notification"
 
 const CONFIG = require("../../config.json");
-
-const openNotification = (msg, desc, duration) => {
-  const args = {
-    message: msg,
-    description: desc,
-    duration: duration,
-  };
-  notification.open(args);
-};
 
 const formItemLayoutWithOutLabel = {
   wrapperCol: {
@@ -24,6 +16,7 @@ const formItemLayoutWithOutLabel = {
   },
 };
 
+// Expiration date selection menu
 const ExpirationSelectMenu = () => {
   return (
     <Form.Item
@@ -60,6 +53,7 @@ const ExpirationSelectMenu = () => {
   );
 };
 
+// Options 
 const DynamicFieldSet = () => {
   return (
     <Form.List name="options">
@@ -130,6 +124,7 @@ const DynamicFieldSet = () => {
   );
 };
 
+// Question text field
 const QuestionTopicSet = () => {
   return (
     <Form.Item
@@ -196,6 +191,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
   );
 };
 
+// Popup with the shareable question url
 export const QuestionFormUrlPopup = (data) => {
   const q_url = window.location.host + "/questions/" + data;
 
@@ -211,6 +207,7 @@ export const QuestionFormUrlPopup = (data) => {
   return;
 };
 
+// Create question button in the /create path
 export const CreateQuestionButton = () => {
   const [visible, setVisible] = useState(false);
 
