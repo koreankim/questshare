@@ -8,6 +8,7 @@ class AnsweringForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      uuid: props.uuid,
       disabled: false,
       value: 0,
       q_data: {},
@@ -31,9 +32,7 @@ class AnsweringForm extends React.Component {
   };
 
   fetchData = () => {
-    const { uuid } = this.props.match.params;
-
-    fetch(CONFIG["proxy"] + "/questions/" + uuid)
+    fetch(CONFIG["proxy"] + "/questions/" + this.props.uuid)
       .then(async (response) => {
         const data = await response.json();
 
@@ -54,10 +53,6 @@ class AnsweringForm extends React.Component {
       .catch((error) => {
         console.error("There was an error!", error);
       });
-  };
-
-  componentDidMount = () => {
-    this.fetchData()
   };
 
   format_question = () => {
@@ -115,7 +110,7 @@ class AnsweringForm extends React.Component {
     if (this.state.loading === true) {
       return <Spin />;
     }
-
+    
     if (
       this.state.q_data == null ||
       Object.entries(this.state.q_data).length === 0
@@ -175,6 +170,10 @@ class AnsweringForm extends React.Component {
       .catch((error) => {
         console.error("There was an error!", error);
       });
+  };
+
+  componentDidMount = () => {
+    this.fetchData()
   };
 
   render() {
