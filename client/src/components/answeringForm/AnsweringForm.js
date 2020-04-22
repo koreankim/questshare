@@ -4,6 +4,15 @@ import { Radio, Form, Button } from "antd";
 const CONFIG = require("../../config.json");
 
 class AnsweringForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      disabled: false,
+      value: 0,
+      q_data: {},
+    };
+  }
+
   formItemLayout = {
     wrapperCol: {
       xs: { span: 24, offset: 0 },
@@ -16,16 +25,8 @@ class AnsweringForm extends React.Component {
     height: "30px",
     lineHeight: "30px",
     fontSize: "11pt",
-    whiteSpace: "normal"
+    whiteSpace: "normal",
   };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: 0,
-      q_data: {},
-    };
-  }
 
   componentDidMount = () => {
     const { uuid } = this.props.match.params;
@@ -71,6 +72,12 @@ class AnsweringForm extends React.Component {
         label="Options:"
         onChange={this.onChange}
         value={this.state.value}
+        rules={[
+            {
+              required: true,
+              message: "Select one of the options before submitting",
+            },
+          ]}
       >
         <Radio.Group>{this.createRadioOptions(this.radioStyle)}</Radio.Group>
       </Form.Item>
@@ -83,7 +90,7 @@ class AnsweringForm extends React.Component {
 
     for (let i = 0; i < options.length; i++) {
       table.push(
-        <Radio style={style} value={i} key={i}>
+        <Radio style={style} value={i} key={i} disabled={this.state.disabled}>
           {options[i]}
         </Radio>
       );
@@ -93,7 +100,10 @@ class AnsweringForm extends React.Component {
   };
 
   format_form = () => {
-    if (this.state.q_data == null || Object.entries(this.state.q_data).length === 0) {
+    if (
+      this.state.q_data == null ||
+      Object.entries(this.state.q_data).length === 0
+    ) {
       return <div>No question with that identifier exists!</div>;
     }
 
@@ -105,7 +115,10 @@ class AnsweringForm extends React.Component {
       >
         {this.format_question()}
         {this.format_options()}
-        <Form.Item wrapperCol={{ span: 12, offset: 6 }} style={{ textAlign: "center" }}>
+        <Form.Item
+          wrapperCol={{ span: 12, offset: 6 }}
+          style={{ textAlign: "center" }}
+        >
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
