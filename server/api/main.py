@@ -45,4 +45,4 @@ def get_question(uuid):
         
     data = dumps(question_collection.find_one({"_uuid": new_uuid}))
 
-    return data
+    return jsonify(data)

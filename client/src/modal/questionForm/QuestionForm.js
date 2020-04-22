@@ -195,7 +195,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
 };
 
 export const QuestionFormUrlPopup = (data) => {
-  const q_url = window.location.hostname + "/questions/" + data;
+  const q_url = window.location.host + "/questions/" + data;
 
   openNotification(
     `Your Shareable URL`,
