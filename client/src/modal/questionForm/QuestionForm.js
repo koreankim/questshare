@@ -4,6 +4,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { CopyOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { fetchDataWithOptions } from "../../utils/api/Api"
 
 const CONFIG = require("../../config.json");
 
@@ -230,16 +231,7 @@ export const CreateQuestionButton = () => {
         disableTime: values["disableTime"],
       }),
     };
-    fetch(CONFIG["proxy"] + "/createquestion", requestOptions)
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }
-        return data;
-      })
+    fetchDataWithOptions("/createquestion", requestOptions)
       .then((data) => {
         return QuestionFormUrlPopup(data);
       })
