@@ -240,10 +240,6 @@ export const CreateQuestionButton = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <div style={{ fontSize: "16px" }}>
-        <strong>Reminder</strong>: All questions automatically expire after{" "}
-        <strong>7</strong> days!
-      </div>
       <Button
         style={{ margin: "25px 0px" }}
         type="primary"

@@ -3,11 +3,12 @@ from bson.json_util import dumps
 
 from uuid import uuid4, UUID
 from .extensions import mongo
-from datetime import datetime
+from datetime import datetime, timedelta
 
 main = Blueprint('main', __name__)
 
 UUID_LENGTH = 36
+THREE_DAYS_IN_SECONDS = 259200
 
 
 @main.route('/createquestion', methods=['POST'])
@@ -25,10 +26,14 @@ def create_question():
 
     uuidGen = uuid4()
     
+
+    disableTime = datetime.utcnow() + timedelta(0, 60 * int(data['disableTime'][0])) 
+
     question_collection.insert_one({
         '_question': data['question'],
         '_options': upd_data,
         '_uuid': uuidGen,
+        '_disableTime': disableTime,
         '_createdAt': datetime.utcnow(),
     })
 
@@ -77,9 +82,8 @@ def ttl_collection():
     index_name = "_createdAt"
     question_collection = mongo.db.questions
     if index_name not in question_collection.index_information():
-        seven_days_in_seconds = 604800
         question_collection.create_index(
-            "_createdAt", expireAfterSeconds=seven_days_in_seconds)
+            "_createdAt", expireAfterSeconds=THREE_DAYS_IN_SECONDS)
 
 
 def uuid_check(uuid):

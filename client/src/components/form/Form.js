@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs, Spin } from "antd";
 import { QuestionCircleOutlined, AlignLeftOutlined } from "@ant-design/icons";
 import AnsweringForm from "../answeringForm/AnsweringForm";
+import ResultsForm from "../resultsForm/ResultsForm";
 import  { sendData } from "../../utils/api/Api"
 
 const { TabPane } = Tabs;
@@ -11,7 +12,8 @@ class Form extends React.Component {
     super(props);
     this.state = {
       loading: true,
-      data: {}
+      deadLine: 0,
+      q_data: {}
     };
   }
 
@@ -24,6 +26,8 @@ class Form extends React.Component {
           q_data: JSON.parse(data),
           loading: false,
         });
+        console.log(this.state.q_data)
+        return data;
       })
       .catch((error) => {
         console.error("There was an error!", error);
@@ -61,7 +65,7 @@ class Form extends React.Component {
           }
           key="2"
         >
-          Results
+          <ResultsForm q_data={this.state.q_data}/>
         </TabPane>
       </Tabs>
     );

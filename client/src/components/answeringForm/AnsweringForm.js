@@ -1,9 +1,9 @@
 import React from "react";
-import { Spin, Radio, Form, Button } from "antd";
+import { Statistic, Row, Col, Radio, Form, Button } from "antd";
 import Error from "../error/Error";
 import { sendData } from "../../utils/api/Api";
 
-const CONFIG = require("../../config.json");
+const { Countdown } = Statistic;
 
 class AnsweringForm extends React.Component {
   constructor(props) {
@@ -12,6 +12,7 @@ class AnsweringForm extends React.Component {
       disabled: false,
       value: 0,
       q_data: props.q_data,
+      deadline: props.deadLine,
     };
   }
 
@@ -32,7 +33,7 @@ class AnsweringForm extends React.Component {
 
   format_question = () => {
     return (
-      <Form.Item label="Question:">
+      <Form.Item label="Question:" required="true">
         <strong>
           <span className="ant-form-text" style={{ fontSize: "13pt" }}>
             "{this.state.q_data["_question"]}"
@@ -73,7 +74,7 @@ class AnsweringForm extends React.Component {
           key={options[i]["choice"]}
           disabled={this.state.disabled}
         >
-          {options[i]["text"]} - <strong>{options[i]["votes"]}</strong>
+          {options[i]["text"]}
         </Radio>
       );
     }
@@ -132,8 +133,36 @@ class AnsweringForm extends React.Component {
       });
   };
 
+  onTimerFinish = () => {
+    this.setState({
+      disabled: true,
+    });
+  };
+
+  componentDidMount = () => {
+    let current = new Date().getTime()
+    if (current > this.state.q_data["_disableTime"]["$date"]) {
+      this.setState({
+        disabled: true
+      })
+    }
+  };
+
   render() {
-    return <div>{this.format_form()}</div>;
+    return (
+      <div>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Countdown
+              title="Locking form in..."
+              value={this.state.q_data["_disableTime"]["$date"]}
+              onFinish={this.onTimerFinish}
+            />
+          </Col>
+        </Row>
+          <div style={{ marginTop: "15px"}}>{this.format_form()}</div>
+      </div>
+    );
   }
 }
 
