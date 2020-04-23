@@ -11,6 +11,10 @@ class ResultsForm extends React.Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ q_data: nextProps.q_data });
+  }
+
   confGraphOptions = (title, options) => {
     return {
       title: {
@@ -33,7 +37,7 @@ class ResultsForm extends React.Component {
 
     for (let i = 0; i < options.length; i++) {
       let obj = {
-        label: options[i]['text'],
+        label: options[i]["text"],
         indexLabel: "Choice " + options[i]["choice"],
         y: options[i]["votes"],
       };

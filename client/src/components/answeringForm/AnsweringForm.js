@@ -12,7 +12,6 @@ class AnsweringForm extends React.Component {
       disabled: false,
       value: 0,
       q_data: props.q_data,
-      deadline: props.deadLine,
     };
   }
 
@@ -124,7 +123,7 @@ class AnsweringForm extends React.Component {
     sendData(window.location.pathname + "/choice/" + this.state.value)
       .then(() => {
         this.setState({
-          disabled: true,
+          disabled: false,
         });
       })
       .catch((error) => {
@@ -136,6 +135,7 @@ class AnsweringForm extends React.Component {
     this.setState({
       disabled: true,
     });
+    this.props.disableHandler()
   };
 
   componentDidMount = () => {
@@ -144,6 +144,7 @@ class AnsweringForm extends React.Component {
       this.setState({
         disabled: true,
       });
+      this.props.disableHandler()
     }
   };
 

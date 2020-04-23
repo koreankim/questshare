@@ -25,14 +25,15 @@ def create_question():
         upd_data.append(obj)
 
     uuidGen = uuid4()
-    
 
-    disableTime = datetime.utcnow() + timedelta(0, 60 * int(data['disableTime'][0])) 
+    disableTime = datetime.utcnow() + timedelta(0, 60 *
+                                                int(data['disableTime'][0]))
 
     question_collection.insert_one({
         '_question': data['question'],
         '_options': upd_data,
         '_uuid': uuidGen,
+        '_totalVotes': int('0'),
         '_disableTime': disableTime,
         '_createdAt': datetime.utcnow(),
     })
@@ -60,17 +61,18 @@ def get_question(uuid):
     return jsonify(data)
 
 
-@main.route('/questions/<uuid>/choice/<choice>', methods=['get'])
+@main.route('/questions/<uuid>/choice/<choice>', methods=['GET'])
 def inc_question_option(uuid, choice):
     question_collection = mongo.db.questions
 
     new_uuid = uuid_check(uuid)
 
     question_collection.update({
-        "_uuid": new_uuid, "_options.choice" : int(choice)
+        "_uuid": new_uuid, "_options.choice": int(choice)
     }, {
         "$inc": {
-            '_options.$.votes': 1
+            '_options.$.votes': 1,
+            '_totalVotes': 1
         },
     })
 

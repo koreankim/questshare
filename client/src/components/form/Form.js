@@ -3,38 +3,52 @@ import { Tabs, Spin } from "antd";
 import { QuestionCircleOutlined, AlignLeftOutlined } from "@ant-design/icons";
 import AnsweringForm from "../answeringForm/AnsweringForm";
 import ResultsForm from "../resultsForm/ResultsForm";
-import  { sendData } from "../../utils/api/Api"
+import { sendData } from "../../utils/api/Api";
 
 const { TabPane } = Tabs;
 
 class Form extends React.Component {
   constructor(props) {
     super(props);
+    this.disableHandler = this.disableHandler.bind(this);
     this.state = {
       loading: true,
-      deadLine: 0,
-      q_data: {}
+      disabled: false,
+      q_data: {},
     };
   }
 
+  disableHandler = () => {
+    this.setState({
+      disabled: true,
+    });
+  };
+
   fetchData = () => {
     const { uuid } = this.props.match.params;
-
     sendData("/questions/" + uuid)
       .then((data) => {
         this.setState({
           q_data: JSON.parse(data),
           loading: false,
         });
-        return data;
       })
       .catch((error) => {
         console.error("There was an error!", error);
       });
   };
 
+  componentWillUnmount() {
+    clearInterval(this.keepWatchingData);
+  }
+
   componentDidMount = () => {
     this.fetchData();
+
+    this.keepWatchingData = setInterval(
+      () => (this.state.disabled ? "" : this.fetchData()),
+      5000
+    );
   };
 
   load_tabs = () => {
@@ -53,7 +67,10 @@ class Form extends React.Component {
           }
           key="1"
         >
-          <AnsweringForm q_data={this.state.q_data}/>
+          <AnsweringForm
+            q_data={this.state.q_data}
+            disableHandler={this.disableHandler}
+          />
         </TabPane>
         <TabPane
           tab={
@@ -64,7 +81,7 @@ class Form extends React.Component {
           }
           key="2"
         >
-          <ResultsForm q_data={this.state.q_data}/>
+          <ResultsForm q_data={this.state.q_data} />
         </TabPane>
       </Tabs>
     );
