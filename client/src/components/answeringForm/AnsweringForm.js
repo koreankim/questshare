@@ -156,7 +156,7 @@ class AnsweringForm extends React.Component {
           value={this.state.q_data["_disableTime"]["$date"]}
           onFinish={this.onTimerFinish}
         />
-        <Divider />
+        <Divider orientation="left">Response Box</Divider> 
         {this.format_form()}
       </div>
     );

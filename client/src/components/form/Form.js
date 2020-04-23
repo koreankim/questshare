@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs, Spin } from "antd";
-import { QuestionCircleOutlined, AlignLeftOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, BarChartOutlined } from "@ant-design/icons";
 import AnsweringForm from "../answeringForm/AnsweringForm";
 import ResultsForm from "../resultsForm/ResultsForm";
 import { sendData } from "../../utils/api/Api";
@@ -75,7 +75,7 @@ class Form extends React.Component {
         <TabPane
           tab={
             <span>
-              <AlignLeftOutlined />
+              <BarChartOutlined />
               Results
             </span>
           }
