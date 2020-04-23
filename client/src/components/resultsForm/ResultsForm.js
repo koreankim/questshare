@@ -1,6 +1,6 @@
 import React from "react";
 import CanvasJSReact from "../../assets/canvasjs.react";
-import { Statistic, Empty, Divider, Spin } from "antd";
+import { Statistic, Empty, Divider } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
 
 let CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -13,7 +13,10 @@ class ResultsForm extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.q_data["_totalVotes"] == 0 && this.props.q_data["_totalVotes"] > 0) {
+    if (
+      prevProps.q_data["_totalVotes"] === 0 &&
+      this.props.q_data["_totalVotes"] > 0
+    ) {
       this.setState({
         empty: false,
       });

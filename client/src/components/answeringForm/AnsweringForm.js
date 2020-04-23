@@ -30,12 +30,19 @@ class AnsweringForm extends React.Component {
 
   format_question = () => {
     return (
-      <Form.Item label="Question:" required="true">
-        <strong>
-          <span className="ant-form-text" style={{ fontSize: "13pt" }}>
-            "{this.props.q_data["_question"]}"
-          </span>
-        </strong>
+      <Form.Item
+        label={
+          <strong>
+            <span style={{ fontSize: "13pt" }}>
+              Question
+            </span>
+          </strong>
+        }
+        required="true"
+      >
+        <span className="ant-form-text" style={{ fontSize: "13pt" }}>
+          "{this.props.q_data["_question"]}"
+        </span>
       </Form.Item>
     );
   };
@@ -44,7 +51,13 @@ class AnsweringForm extends React.Component {
     return (
       <Form.Item
         name="options"
-        label="Options:"
+        label={
+          <strong>
+            <span style={{ fontSize: "13pt" }}>
+              Option(s)
+            </span>
+          </strong>
+        }
         onChange={this.onChange}
         value={this.state.value}
         rules={[
@@ -134,7 +147,7 @@ class AnsweringForm extends React.Component {
     this.setState({
       disabled: true,
     });
-    this.props.disableHandler()
+    this.props.disableHandler();
   };
 
   componentDidMount = () => {
@@ -143,7 +156,7 @@ class AnsweringForm extends React.Component {
       this.setState({
         disabled: true,
       });
-      this.props.disableHandler()
+      this.props.disableHandler();
     }
   };
 
@@ -155,7 +168,7 @@ class AnsweringForm extends React.Component {
           value={this.props.q_data["_disableTime"]["$date"]}
           onFinish={this.onTimerFinish}
         />
-        <Divider orientation="left">Response Box</Divider> 
+        <Divider orientation="left">Response Box</Divider>
         {this.format_form()}
       </div>
     );

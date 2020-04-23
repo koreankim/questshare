@@ -196,7 +196,7 @@ export const QuestionFormUrlPopup = (data) => {
   const q_url = window.location.host + "/questions/" + data;
 
   openNotification(
-    `Your Shareable URL`,
+    `Your QuestShare URL`,
     <CopyToClipboard text={q_url}>
       <span>
         {q_url} <CopyOutlined style={{ fontSize: "14px" }} />
