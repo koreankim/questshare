@@ -11,7 +11,6 @@ class AnsweringForm extends React.Component {
     this.state = {
       disabled: false,
       value: 0,
-      q_data: props.q_data,
     };
   }
 
@@ -34,7 +33,7 @@ class AnsweringForm extends React.Component {
       <Form.Item label="Question:" required="true">
         <strong>
           <span className="ant-form-text" style={{ fontSize: "13pt" }}>
-            "{this.state.q_data["_question"]}"
+            "{this.props.q_data["_question"]}"
           </span>
         </strong>
       </Form.Item>
@@ -62,7 +61,7 @@ class AnsweringForm extends React.Component {
 
   createRadioOptions = (style) => {
     let table = [];
-    let options = this.state.q_data["_options"];
+    let options = this.props.q_data["_options"];
 
     for (let i = 0; i < options.length; i++) {
       table.push(
@@ -82,8 +81,8 @@ class AnsweringForm extends React.Component {
 
   format_form = () => {
     if (
-      this.state.q_data == null ||
-      Object.entries(this.state.q_data).length === 0
+      this.props.q_data == null ||
+      Object.entries(this.props.q_data).length === 0
     ) {
       return <Error />;
     }
@@ -123,7 +122,7 @@ class AnsweringForm extends React.Component {
     sendData(window.location.pathname + "/choice/" + this.state.value)
       .then(() => {
         this.setState({
-          disabled: false,
+          disabled: false, // TODO: Make sure to set this to true
         });
       })
       .catch((error) => {
@@ -140,7 +139,7 @@ class AnsweringForm extends React.Component {
 
   componentDidMount = () => {
     let current = new Date().getTime();
-    if (current > this.state.q_data["_disableTime"]["$date"]) {
+    if (current > this.props.q_data["_disableTime"]["$date"]) {
       this.setState({
         disabled: true,
       });
@@ -153,7 +152,7 @@ class AnsweringForm extends React.Component {
       <div>
         <Countdown
           title="Locking form in..."
-          value={this.state.q_data["_disableTime"]["$date"]}
+          value={this.props.q_data["_disableTime"]["$date"]}
           onFinish={this.onTimerFinish}
         />
         <Divider orientation="left">Response Box</Divider> 
