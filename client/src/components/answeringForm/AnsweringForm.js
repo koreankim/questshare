@@ -1,5 +1,5 @@
 import React from "react";
-import { Statistic, Row, Col, Radio, Form, Button } from "antd";
+import { Statistic, Radio, Form, Button, Divider } from "antd";
 import Error from "../error/Error";
 import { sendData } from "../../utils/api/Api";
 
@@ -25,7 +25,6 @@ class AnsweringForm extends React.Component {
 
   radioStyle = {
     display: "block",
-    height: "30px",
     lineHeight: "30px",
     fontSize: "11pt",
     whiteSpace: "normal",
@@ -140,27 +139,24 @@ class AnsweringForm extends React.Component {
   };
 
   componentDidMount = () => {
-    let current = new Date().getTime()
+    let current = new Date().getTime();
     if (current > this.state.q_data["_disableTime"]["$date"]) {
       this.setState({
-        disabled: true
-      })
+        disabled: true,
+      });
     }
   };
 
   render() {
     return (
       <div>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Countdown
-              title="Locking form in..."
-              value={this.state.q_data["_disableTime"]["$date"]}
-              onFinish={this.onTimerFinish}
-            />
-          </Col>
-        </Row>
-          <div style={{ marginTop: "15px"}}>{this.format_form()}</div>
+        <Countdown
+          title="Locking form in..."
+          value={this.state.q_data["_disableTime"]["$date"]}
+          onFinish={this.onTimerFinish}
+        />
+        <Divider />
+        {this.format_form()}
       </div>
     );
   }

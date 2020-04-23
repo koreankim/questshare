@@ -1,8 +1,9 @@
 import React from "react";
-import { Radio, Form, Button } from "antd";
-import Error from "../error/Error";
-import { sendData } from "../../utils/api/Api";
+import CanvasJSReact from "../../assets/canvasjs.react";
+import { Row, Divider } from "antd";
 
+let CanvasJS = CanvasJSReact.CanvasJS;
+let CanvasJSChart = CanvasJSReact.CanvasJSChart;
 class ResultsForm extends React.Component {
   constructor(props) {
     super(props);
@@ -11,19 +12,44 @@ class ResultsForm extends React.Component {
     };
   }
 
+  confGraphOptions = (title, options) => {
+    return {
+      title: {
+        text: title,
+      },
+      data: [
+        {
+          type: "pie",
+          showInLegend: true,
+          legendText: "{label}",
+          dataPoints: options,
+        },
+      ],
+    };
+  };
+
   displayResults = () => {
     let table = [];
     let options = this.state.q_data["_options"];
 
     for (let i = 0; i < options.length; i++) {
-      table.push(<strong>{options[i]["votes"]}</strong>);
-
+      let obj = {
+        label: options[i]['text'],
+        indexLabel: "Choice " + options[i]["choice"],
+        y: options[i]["votes"],
+      };
+      table.push(obj);
     }
-    return table;
+
+    return (
+      <div>
+        <CanvasJSChart options={this.confGraphOptions("Vote Spread", table)} />
+      </div>
+    );
   };
 
   render() {
-    return <div>{this.displayResults()}</div>;
+    return this.displayResults();
   }
 }
 

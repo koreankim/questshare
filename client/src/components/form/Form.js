@@ -26,7 +26,6 @@ class Form extends React.Component {
           q_data: JSON.parse(data),
           loading: false,
         });
-        console.log(this.state.q_data)
         return data;
       })
       .catch((error) => {

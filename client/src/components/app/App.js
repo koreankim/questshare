@@ -14,7 +14,7 @@ class App extends React.Component {
         <Layout>
           <Navbar />
           <Content style={{ padding: "25px 50px" }}>
-            <div className="site-layout-content" style={{ height: "calc(100vh - 55px)" }}>
+            <div className="site-layout-content" style={{ height: "100%" }}>
               {appRouter()}
             </div>
           </Content>
