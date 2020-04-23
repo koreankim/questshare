@@ -1,7 +1,7 @@
 import React from "react";
 import { Statistic, Radio, Form, Button, Divider } from "antd";
 import Error from "../error/Error";
-import { sendDataWithOptions, fetchIP } from "../../utils/api/Api";
+import { sendDataWithOptions } from "../../utils/api/Api";
 
 const { Countdown } = Statistic;
 
@@ -10,7 +10,6 @@ class AnsweringForm extends React.Component {
     super(props);
     this.state = {
       disabled: true,
-      ip: 0,
       value: 0,
     };
   }
@@ -139,15 +138,14 @@ class AnsweringForm extends React.Component {
       },
       body: JSON.stringify({
         choice: this.state.value,
-        ip: this.state.ip,
+        ip: this.props.ip,
         uuid: this.props.uuid,
       }),
     };
 
-    sendDataWithOptions("/questions/submit", requestOptions)
-      .catch((error) => {
-        console.error("There was an error submitting your response!", error);
-      });
+    sendDataWithOptions("/questions/submit", requestOptions).catch((error) => {
+      console.error("There was an error submitting your response!", error);
+    });
   };
 
   onTimerFinish = () => {
@@ -161,27 +159,23 @@ class AnsweringForm extends React.Component {
     let current = new Date().getTime();
     let didCurrentUserVoteAlready = false;
 
-    fetchIP().then((data) => {
+    if (this.props.q_data["_voters"].includes(this.props.ip)) {
+      didCurrentUserVoteAlready = true;
+    }
+
+    if (
+      current > this.props.q_data["_disableTime"]["$date"] ||
+      didCurrentUserVoteAlready
+    ) {
       this.setState({
-        ip: data
-      })
-
-      if (this.props.q_data["_voters"].includes(this.state.ip)) {
-        didCurrentUserVoteAlready = true;
-      }
-
-      if (current > this.props.q_data["_disableTime"]["$date"] || didCurrentUserVoteAlready) {
-        this.setState({
-          disabled: true,
-        });
-        this.props.disableHandler();
-      }
-      else {
-        this.setState({
-          disabled: false
-        })
-      }
-    });
+        disabled: true,
+      });
+      this.props.disableHandler();
+    } else {
+      this.setState({
+        disabled: false,
+      });
+    }
   };
 
   render() {

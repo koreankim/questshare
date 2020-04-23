@@ -3,7 +3,7 @@ import { Tabs, Spin } from "antd";
 import { QuestionCircleOutlined, BarChartOutlined } from "@ant-design/icons";
 import AnsweringForm from "../answeringForm/AnsweringForm";
 import ResultsForm from "../resultsForm/ResultsForm";
-import { sendData } from "../../utils/api/Api";
+import { sendData, fetchIP } from "../../utils/api/Api";
 
 const { TabPane } = Tabs;
 
@@ -15,7 +15,8 @@ class Form extends React.Component {
       loading: true,
       disabled: false,
       q_data: {},
-      uuid: 0
+      uuid: 0,
+      ip: 0,
     };
   }
 
@@ -27,17 +28,27 @@ class Form extends React.Component {
 
   fetchData = () => {
     const { uuid } = this.props.match.params;
-
-    sendData("/questions/" + uuid)
-      .then((data) => {
+    fetchIP()
+      .then((ip_d) => {
         this.setState({
-          q_data: JSON.parse(data),
-          uuid: uuid,
-          loading: false,
+          ip: ip_d,
         });
       })
+      .then(() => {
+        sendData("/questions/" + uuid)
+          .then((data) => {
+            this.setState({
+              q_data: JSON.parse(data),
+              uuid: uuid,
+              loading: false,
+            });
+          })
+          .catch((error) => {
+            console.error("There was an error fetching the question!", error);
+          });
+      })
       .catch((error) => {
-        console.error("There was an error!", error);
+        console.error("There was an error fetching the IP!", error);
       });
   };
 
@@ -74,6 +85,7 @@ class Form extends React.Component {
             q_data={this.state.q_data}
             uuid={this.state.uuid}
             disableHandler={this.disableHandler}
+            ip={this.state.ip}
           />
         </TabPane>
         <TabPane
