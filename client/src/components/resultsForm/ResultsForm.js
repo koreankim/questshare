@@ -1,6 +1,5 @@
 import React from "react";
 import CanvasJSReact from "../../assets/canvasjs.react";
-import { Row, Divider } from "antd";
 
 let CanvasJS = CanvasJSReact.CanvasJS;
 let CanvasJSChart = CanvasJSReact.CanvasJSChart;

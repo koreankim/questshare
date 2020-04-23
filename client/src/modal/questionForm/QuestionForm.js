@@ -239,7 +239,7 @@ export const CreateQuestionButton = () => {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div>
       <Button
         style={{ margin: "25px 0px" }}
         type="primary"
