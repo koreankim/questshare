@@ -1,6 +1,5 @@
 import React from "react";
 import { Statistic, Radio, Form, Button, Divider } from "antd";
-import Error from "../error/Error";
 import { sendDataWithOptions } from "../../utils/api/Api";
 
 const { Countdown } = Statistic;
@@ -89,13 +88,6 @@ class AnsweringForm extends React.Component {
   };
 
   format_form = () => {
-    if (
-      this.props.q_data == null ||
-      Object.entries(this.props.q_data).length === 0
-    ) {
-      return <Error />;
-    }
-
     return (
       <Form
         name="submission_form"
@@ -157,11 +149,7 @@ class AnsweringForm extends React.Component {
 
   componentDidMount = () => {
     let current = new Date().getTime();
-    let didCurrentUserVoteAlready = false;
-
-    if (this.props.q_data["_voters"].includes(this.props.ip)) {
-      didCurrentUserVoteAlready = true;
-    }
+    let didCurrentUserVoteAlready = this.props.q_data["_voters"].includes(this.props.ip);
 
     if (
       current > this.props.q_data["_disableTime"]["$date"] ||

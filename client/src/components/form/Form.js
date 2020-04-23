@@ -4,6 +4,7 @@ import { QuestionCircleOutlined, BarChartOutlined } from "@ant-design/icons";
 import AnsweringForm from "../answeringForm/AnsweringForm";
 import ResultsForm from "../resultsForm/ResultsForm";
 import { sendData, fetchIP } from "../../utils/api/Api";
+import Error from "../error/Error";
 
 const { TabPane } = Tabs;
 
@@ -68,6 +69,12 @@ class Form extends React.Component {
   load_tabs = () => {
     if (this.state.loading === true) {
       return <Spin />;
+    }
+    if (
+      this.state.q_data == null ||
+      Object.entries(this.state.q_data).length === 0
+    ) {
+      return <Error />;
     }
 
     return (
