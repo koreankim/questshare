@@ -1,7 +1,7 @@
 import React from "react";
 import { Statistic, Radio, Form, Button, Divider } from "antd";
 import Error from "../error/Error";
-import { sendData } from "../../utils/api/Api";
+import { sendDataWithOptions, fetchIP } from "../../utils/api/Api";
 
 const { Countdown } = Statistic;
 
@@ -9,7 +9,8 @@ class AnsweringForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      disabled: false,
+      disabled: true,
+      ip: 0,
       value: 0,
     };
   }
@@ -33,9 +34,7 @@ class AnsweringForm extends React.Component {
       <Form.Item
         label={
           <strong>
-            <span style={{ fontSize: "13pt" }}>
-              Question
-            </span>
+            <span style={{ fontSize: "13pt" }}>Question</span>
           </strong>
         }
         required="true"
@@ -53,9 +52,7 @@ class AnsweringForm extends React.Component {
         name="options"
         label={
           <strong>
-            <span style={{ fontSize: "13pt" }}>
-              Option(s)
-            </span>
+            <span style={{ fontSize: "13pt" }}>Option(s)</span>
           </strong>
         }
         onChange={this.onChange}
@@ -131,15 +128,25 @@ class AnsweringForm extends React.Component {
   };
 
   onFinish = (values) => {
-    // TODO: Make into a post call to post ip + choice to ensure IP uniqueness?
-    sendData(window.location.pathname + "/choice/" + this.state.value)
-      .then(() => {
-        this.setState({
-          disabled: false, // TODO: Make sure to set this to true
-        });
-      })
+    this.setState({
+      disabled: true,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        choice: this.state.value,
+        ip: this.state.ip,
+        uuid: this.props.uuid,
+      }),
+    };
+
+    sendDataWithOptions("/questions/submit", requestOptions)
       .catch((error) => {
-        console.error("There was an error!", error);
+        console.error("There was an error submitting your response!", error);
       });
   };
 
@@ -152,12 +159,29 @@ class AnsweringForm extends React.Component {
 
   componentDidMount = () => {
     let current = new Date().getTime();
-    if (current > this.props.q_data["_disableTime"]["$date"]) {
+    let didCurrentUserVoteAlready = false;
+
+    fetchIP().then((data) => {
       this.setState({
-        disabled: true,
-      });
-      this.props.disableHandler();
-    }
+        ip: data
+      })
+
+      if (this.props.q_data["_voters"].includes(this.state.ip)) {
+        didCurrentUserVoteAlready = true;
+      }
+
+      if (current > this.props.q_data["_disableTime"]["$date"] || didCurrentUserVoteAlready) {
+        this.setState({
+          disabled: true,
+        });
+        this.props.disableHandler();
+      }
+      else {
+        this.setState({
+          disabled: false
+        })
+      }
+    });
   };
 
   render() {

@@ -35,6 +35,7 @@ def create_question():
         '_uuid': uuidGen,
         '_totalVotes': int('0'),
         '_disableTime': disableTime,
+        '_voters': [],
         '_createdAt': datetime.utcnow(),
     })
 
@@ -61,9 +62,15 @@ def get_question(uuid):
     return jsonify(data)
 
 
-@main.route('/questions/<uuid>/choice/<choice>', methods=['GET'])
-def inc_question_option(uuid, choice):
+@main.route('/questions/submit', methods=['POST'])
+def inc_question_option():
     question_collection = mongo.db.questions
+
+    data = request.get_json()
+
+    uuid = data["uuid"]
+    choice = data["choice"]
+    ip = data["ip"]
 
     new_uuid = uuid_check(uuid)
 
@@ -74,6 +81,9 @@ def inc_question_option(uuid, choice):
             '_options.$.votes': 1,
             '_totalVotes': 1
         },
+        "$addToSet": {
+            "_voters" : ip
+        }
     })
 
     return jsonify("201, done")

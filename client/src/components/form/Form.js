@@ -15,6 +15,7 @@ class Form extends React.Component {
       loading: true,
       disabled: false,
       q_data: {},
+      uuid: 0
     };
   }
 
@@ -26,10 +27,12 @@ class Form extends React.Component {
 
   fetchData = () => {
     const { uuid } = this.props.match.params;
+
     sendData("/questions/" + uuid)
       .then((data) => {
         this.setState({
           q_data: JSON.parse(data),
+          uuid: uuid,
           loading: false,
         });
       })
@@ -69,6 +72,7 @@ class Form extends React.Component {
         >
           <AnsweringForm
             q_data={this.state.q_data}
+            uuid={this.state.uuid}
             disableHandler={this.disableHandler}
           />
         </TabPane>
