@@ -10,3 +10,4 @@
 * [ReactJS](https://reactjs.org/) - A JavaScript library for building user interfaces
 * [CanvasJS](https://canvasjs.com/) - Responsive HTML5 Charting Library with a Simple API
 * [Antd](https://ant.design/) - A design system for enterprise-level products
+* [geoPlugin](https://www.geoplugin.com/) -  a free geolocation API in multiple different programming languages in a single API call
