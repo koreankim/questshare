@@ -11,6 +11,31 @@ const CONFIG = require("../../config.json");
 
 // Expiration date selection menu
 const ExpirationSelectMenu = () => {
+  const expirationOptions = () => {
+    return [
+      {
+        value: 1,
+        label: "1 minute",
+      },
+      {
+        value: 5,
+        label: "5 minute",
+      },
+      {
+        value: 10,
+        label: "10 minutes",
+      },
+      {
+        value: 30,
+        label: "30 minutes",
+      },
+      {
+        value: 60,
+        label: "60 minutes",
+      },
+    ];
+  };
+
   return (
     <Row>
       <Col flex={1}>
@@ -24,26 +49,7 @@ const ExpirationSelectMenu = () => {
             },
           ]}
         >
-          <Cascader
-            options={[
-              {
-                value: 1,
-                label: "1 minute",
-              },
-              {
-                value: 5,
-                label: "5 minute",
-              },
-              {
-                value: 10,
-                label: "10 minutes",
-              },
-              {
-                value: 30,
-                label: "30 minutes",
-              },
-            ]}
-          />
+          <Cascader options={expirationOptions()} />
         </Form.Item>
       </Col>
     </Row>
