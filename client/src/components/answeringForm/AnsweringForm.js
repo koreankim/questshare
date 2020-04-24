@@ -1,5 +1,5 @@
 import React from "react";
-import { Statistic, Radio, Form, Button, Divider } from "antd";
+import { Row, Col, Statistic, Radio, Form, Button, Divider } from "antd";
 import { sendDataWithOptions } from "../../utils/api/Api";
 
 const { Countdown } = Statistic;
@@ -9,19 +9,14 @@ class AnsweringForm extends React.Component {
     super(props);
     this.state = {
       disabled: true,
+      submitting: false,
       value: 0,
     };
   }
 
-  formItemLayout = {
-    wrapperCol: {
-      xs: { span: 24, offset: 0 },
-      sm: { span: 20, offset: 4 },
-    },
-  };
-
   radioStyle = {
     display: "block",
+    marginBottom: "15px",
     lineHeight: "30px",
     fontSize: "11pt",
     whiteSpace: "normal",
@@ -29,16 +24,9 @@ class AnsweringForm extends React.Component {
 
   format_question = () => {
     return (
-      <Form.Item
-        label={
-          <strong>
-            <span style={{ fontSize: "13pt" }}>Question</span>
-          </strong>
-        }
-        required="true"
-      >
+      <Form.Item>
         <span className="ant-form-text" style={{ fontSize: "13pt" }}>
-          "{this.props.q_data["_question"]}"
+          <strong>"{this.props.q_data["_question"]}"</strong>
         </span>
       </Form.Item>
     );
@@ -47,12 +35,6 @@ class AnsweringForm extends React.Component {
   format_options = () => {
     return (
       <Form.Item
-        name="options"
-        label={
-          <strong>
-            <span style={{ fontSize: "13pt" }}>Option(s)</span>
-          </strong>
-        }
         onChange={this.onChange}
         value={this.state.value}
         rules={[
@@ -73,43 +55,20 @@ class AnsweringForm extends React.Component {
 
     for (let i = 0; i < options.length; i++) {
       table.push(
-        <Radio
-          style={style}
-          value={options[i]["choice"]}
-          key={options[i]["choice"]}
-          disabled={this.state.disabled}
-        >
-          {options[i]["text"]}
-        </Radio>
+        <Row>
+          <Radio
+            style={style}
+            value={options[i]["choice"]}
+            key={options[i]["choice"]}
+            disabled={this.state.disabled}
+          >
+            {options[i]["text"]}
+          </Radio>
+        </Row>
       );
     }
 
     return table;
-  };
-
-  format_form = () => {
-    return (
-      <Form
-        name="submission_form"
-        {...this.formItemLayout}
-        onFinish={this.onFinish}
-      >
-        {this.format_question()}
-        {this.format_options()}
-        <Form.Item
-          wrapperCol={{ span: 12, offset: 6 }}
-          style={{ textAlign: "center" }}
-        >
-          <Button
-            type="primary"
-            htmlType="submit"
-            disabled={this.state.disabled}
-          >
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    );
   };
 
   onChange = (e) => {
@@ -121,6 +80,7 @@ class AnsweringForm extends React.Component {
   onFinish = (values) => {
     this.setState({
       disabled: true,
+      submitting: true,
     });
 
     const requestOptions = {
@@ -135,9 +95,15 @@ class AnsweringForm extends React.Component {
       }),
     };
 
-    sendDataWithOptions("/questions/submit", requestOptions).catch((error) => {
-      console.error("There was an error submitting your response!", error);
-    });
+    sendDataWithOptions("/questions/submit", requestOptions)
+      .then(() => {
+        this.setState({
+          submitting: false,
+        });
+      })
+      .catch((error) => {
+        console.error("There was an error submitting your response!", error);
+      });
   };
 
   onTimerFinish = () => {
@@ -149,7 +115,9 @@ class AnsweringForm extends React.Component {
 
   componentDidMount = () => {
     let current = new Date().getTime();
-    let didCurrentUserVoteAlready = this.props.q_data["_voters"].includes(this.props.ip);
+    let didCurrentUserVoteAlready = this.props.q_data["_voters"].includes(
+      this.props.ip
+    );
 
     if (
       current > this.props.q_data["_disableTime"]["$date"] ||
@@ -166,15 +134,47 @@ class AnsweringForm extends React.Component {
     }
   };
 
+  submitButton = () => {
+    return (
+      <Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          disabled={this.state.disabled}
+          loading={this.state.submitting}
+        >
+          Submit Response
+        </Button>
+      </Form.Item>
+    );
+  };
+
+  format_form = () => {
+    return (
+      <Form
+        name="submission_form"
+        onFinish={this.onFinish}
+      >
+        <Row>
+          <Col flex={1}>{this.format_question()}</Col>
+        </Row>
+        <Row style={{ display: "inline-block", textAlign: "left" }}>
+          <Col flex={1}>{this.format_options()}</Col>
+        </Row>
+        {this.submitButton()}
+      </Form>
+    );
+  };
+
   render() {
     return (
-      <div>
+      <div style={{ textAlign: "center" }}>
         <Countdown
           title="Locking form in..."
           value={this.props.q_data["_disableTime"]["$date"]}
           onFinish={this.onTimerFinish}
         />
-        <Divider orientation="left">Response Box</Divider>
+        <Divider/>
         {this.format_form()}
       </div>
     );

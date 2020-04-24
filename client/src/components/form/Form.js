@@ -78,7 +78,7 @@ class Form extends React.Component {
     }
 
     return (
-      <Tabs defaultActiveKey="1">
+      <Tabs style={{textAlign: "center"}} defaultActiveKey="1">
         <TabPane
           tab={
             <span>

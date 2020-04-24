@@ -1,6 +1,6 @@
 import React from "react";
 import CanvasJSReact from "../../assets/canvasjs.react";
-import { Statistic, Empty, Divider } from "antd";
+import { Row, Col, Statistic, Empty, Divider } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
 
 let CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -85,16 +85,27 @@ class ResultsForm extends React.Component {
 
     return (
       <div>
-        <Statistic
-          style={{ textAlign: "center" }}
-          title="Total Votes"
-          value={this.props.q_data["_totalVotes"]}
-          prefix={<TeamOutlined />}
-        />
+        <Row>
+          <Col flex={1}>
+            <Statistic
+              style={{ textAlign: "center" }}
+              title="Total Votes"
+              value={this.props.q_data["_totalVotes"]}
+              prefix={<TeamOutlined />}
+            />
+          </Col>
+        </Row>
         <Divider>Your Meaningful Data</Divider>
-        <CanvasJSChart
-          options={this.confGraphOptions("Vote Spread", this.getPieChartData())}
-        />
+        <Row>
+          <Col flex={1}>
+            <CanvasJSChart
+              options={this.confGraphOptions(
+                "Vote Spread",
+                this.getPieChartData()
+              )}
+            />
+          </Col>
+        </Row>
       </div>
     );
   };
