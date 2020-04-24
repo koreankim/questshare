@@ -1,145 +1,145 @@
 import React, { useState } from "react";
-import { Button, Cascader, Modal, Form, Input } from "antd";
+import { Divider, Row, Col, Button, Cascader, Modal, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { CopyOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { sendDataWithOptions } from "../../utils/api/Api"
-import { openNotification } from "../notification/Notification"
+import { sendDataWithOptions } from "../../utils/api/Api";
+import { openNotification } from "../notification/Notification";
 
 const CONFIG = require("../../config.json");
-
-const formItemLayoutWithOutLabel = {
-  wrapperCol: {
-    xs: { span: 24, offset: 0 },
-    sm: { span: 20, offset: 4 },
-  },
-};
 
 // Expiration date selection menu
 const ExpirationSelectMenu = () => {
   return (
-    <Form.Item
-      name="disableTime"
-      label="Disable After:"
-      rules={[
-        {
-          required: true,
-          message: "Disable time is required!",
-        },
-      ]}
-    >
-      <Cascader
-        options={[
-          {
-            value: 1,
-            label: "1 minute",
-          },
-          {
-            value: 5,
-            label: "5 minute",
-          },
-          {
-            value: 10,
-            label: "10 minutes",
-          },
-          {
-            value: 30,
-            label: "30 minutes",
-          },
-        ]}
-      />
-    </Form.Item>
+    <Row>
+      <Col flex={1}>
+        <Form.Item
+          name="disableTime"
+          label={<strong>Disable After</strong>}
+          rules={[
+            {
+              required: true,
+              message: "Disable time is required!",
+            },
+          ]}
+        >
+          <Cascader
+            options={[
+              {
+                value: 1,
+                label: "1 minute",
+              },
+              {
+                value: 5,
+                label: "5 minute",
+              },
+              {
+                value: 10,
+                label: "10 minutes",
+              },
+              {
+                value: 30,
+                label: "30 minutes",
+              },
+            ]}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
   );
 };
 
-// Options 
+// Options
 const DynamicFieldSet = () => {
   return (
-    <Form.List name="options">
-      {(fields, { add, remove }) => {
-        return (
-          <div>
-            {fields.map((field, index) => (
-              <Form.Item
-                label={index === 0 ? "Options:" : ""}
-                required={true}
-                key={field.key}
-                {...formItemLayoutWithOutLabel}
-              >
-                <Form.Item
-                  {...field}
-                  validateTrigger={["onChange", "onBlur"]}
-                  rules={[
-                    {
-                      required: true,
-                      whitespace: true,
-                      max: CONFIG["max_options_input_length"],
-                      message: "Invalid inputs for option!",
-                    },
-                  ]}
-                  noStyle
-                >
-                  <Input
-                    placeholder="option (max 100 characters)"
-                    style={{ width: "60%" }}
-                  />
-                </Form.Item>
-                {fields.length > 1 ? (
-                  <MinusCircleOutlined
-                    className="dynamic-delete-button"
-                    style={{ margin: "0 8px" }}
+    <Row>
+      <Col style={{ textAlign: "center" }} flex={1} xs={{ offset: 1 }}>
+        <Form.List name="options">
+          {(fields, { add, remove }) => {
+            return (
+              <div>
+                {fields.map((field, index) => (
+                  <Form.Item required={true} key={field.key}>
+                    <Form.Item
+                      {...field}
+                      validateTrigger={["onChange", "onBlur"]}
+                      rules={[
+                        {
+                          required: true,
+                          whitespace: true,
+                          max: CONFIG["max_options_input_length"],
+                          message: "Invalid inputs for option!",
+                        },
+                      ]}
+                      noStyle
+                    >
+                      <Input
+                        placeholder="option (max 100 characters)"
+                        style={{ width: "80%" }}
+                      />
+                    </Form.Item>
+                    {fields.length > 1 ? (
+                      <MinusCircleOutlined
+                        className="dynamic-delete-button"
+                        style={{ margin: "0 8px" }}
+                        onClick={() => {
+                          remove(field.name);
+                        }}
+                      />
+                    ) : null}
+                  </Form.Item>
+                ))}
+                <Form.Item>
+                  <Button
+                    type="dashed"
                     onClick={() => {
-                      remove(field.name);
+                      if (fields.length >= CONFIG["free_tier_max_options"]) {
+                        openNotification(
+                          "Too many options!",
+                          "You may only have (" +
+                            CONFIG["free_tier_max_options"] +
+                            ") options per question.",
+                          3
+                        );
+                        return;
+                      }
+                      add();
                     }}
-                  />
-                ) : null}
-              </Form.Item>
-            ))}
-            <Form.Item {...formItemLayoutWithOutLabel}>
-              <Button
-                type="dashed"
-                onClick={() => {
-                  if (fields.length >= CONFIG["free_tier_max_options"]) {
-                    openNotification(
-                      "Too many options!",
-                      "You may only have (" +
-                        CONFIG["free_tier_max_options"] +
-                        ") options per question.",
-                      3
-                    );
-                    return;
-                  }
-                  add();
-                }}
-                style={{ width: "60%" }}
-              >
-                <PlusOutlined /> Add Option
-              </Button>
-            </Form.Item>
-          </div>
-        );
-      }}
-    </Form.List>
+                    style={{ width: "60%" }}
+                  >
+                    <PlusOutlined /> Add Option
+                  </Button>
+                </Form.Item>
+              </div>
+            );
+          }}
+        </Form.List>
+      </Col>
+    </Row>
   );
 };
 
 // Question text field
 const QuestionTopicSet = () => {
   return (
-    <Form.Item
-      name="question"
-      label="Your Question (max 250 characters)"
-      rules={[
-        {
-          required: true,
-          max: CONFIG["max_question_input_length"],
-          message: "Invalid inputs for question!",
-        },
-      ]}
-    >
-      <Input.TextArea />
-    </Form.Item>
+    <Row>
+      <Col flex={1}>
+        <Form.Item
+          name="question"
+          label={<strong>Your Question</strong>}
+          rules={[
+            {
+              required: true,
+              max: CONFIG["max_question_input_length"],
+              message: "Invalid inputs for question!",
+            },
+          ]}
+        >
+          <Input.TextArea placeholder="Question (max 250 characters)" />
+        </Form.Item>
+      </Col>
+    </Row>
   );
 };
 
@@ -147,7 +147,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
   const [form] = Form.useForm();
 
   const onOk = (onCreate) => {
-    if (form.getFieldsValue()["options"] == undefined) {
+    if (form.getFieldsValue()["options"] === undefined) {
       openNotification(
         `Your form is incomplete!`,
         "You must have at least (1) option before submitting.",
@@ -172,7 +172,7 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
       visible={visible}
       title="Create a New Question"
       okText="Create"
-      width="600px"
+      width="850px"
       cancelText="Cancel"
       maskClosable={false}
       onCancel={() => {
@@ -184,7 +184,9 @@ const CreateQuestionForm = ({ visible, onCreate, onCancel }) => {
     >
       <Form form={form} layout="vertical" name="question_form">
         <QuestionTopicSet />
+        <Divider>Configurations</Divider>
         <ExpirationSelectMenu />
+        <Divider>Response Options</Divider>
         <DynamicFieldSet />
       </Form>
     </Modal>
