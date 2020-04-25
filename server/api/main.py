@@ -31,6 +31,7 @@ def create_question():
         '_totalVotes': int('0'),
         '_disableTime': disableTime,
         '_securityType': data['securityType'],
+        '_recaptcha': data['recaptcha'],
         '_voters': [],
         '_createdAt': datetime.utcnow(),
     })

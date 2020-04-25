@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Statistic, Radio, Form, Button, Divider } from "antd";
 import { sendDataWithOptions } from "../../utils/api/Api";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const { Countdown } = Statistic;
 
@@ -12,6 +13,8 @@ class AnsweringForm extends React.Component {
     this.state = {
       disabled: true,
       submitting: false,
+      validated_captcha: false,
+      selected_option: false,
       value: 0,
     };
   }
@@ -38,6 +41,7 @@ class AnsweringForm extends React.Component {
     const onChange = (e) => {
       this.setState({
         value: e.target.value,
+        selected_option: true,
       });
     };
 
@@ -87,7 +91,13 @@ class AnsweringForm extends React.Component {
       this.props.ip
     );
     const isVotingSecurityEnabled =
-      this.props.q_data["_securityType"] != CONFIG["unlimited_security_type"];
+      this.props.q_data["_securityType"] !== CONFIG["unlimited_security_type"];
+
+    if (!this.props.q_data["_recaptcha"]) {
+      this.setState({
+        validated_captcha: true,
+      });
+    }
 
     if (disableTimeReached || (isVotingSecurityEnabled && userAlreadyVoted)) {
       this.setState({
@@ -107,7 +117,11 @@ class AnsweringForm extends React.Component {
         <Button
           type="primary"
           htmlType="submit"
-          disabled={this.state.disabled}
+          disabled={
+            this.state.disabled ||
+            !this.state.validated_captcha ||
+            !this.state.selected_option
+          }
           loading={this.state.submitting}
         >
           Submit Response
@@ -116,10 +130,40 @@ class AnsweringForm extends React.Component {
     );
   };
 
+  displayCaptcha = () => {
+    const onFinish = (value) => {
+      this.setState({
+        validated_captcha: true,
+      });
+    };
+
+    if (this.state.disabled || this.state.validated_captcha) {
+      return;
+    }
+
+    return (
+      <ReCAPTCHA
+        sitekey={CONFIG["google_recaptcha_sitekey"]}
+        onChange={onFinish}
+      />
+    );
+  };
+
   format_form = () => {
     const onFinish = (values) => {
+      if (!this.state.validated_captcha) {
+        return;
+      }
+
+      if (this.props.q_data["_recaptcha"]) {
+        this.setState({
+          validated_captcha: false,
+        });
+      }
+
       const disableForm =
-        this.props.q_data["_securityType"] != CONFIG["unlimited_security_type"];
+        this.props.q_data["_securityType"] !==
+        CONFIG["unlimited_security_type"];
 
       this.setState({
         disabled: disableForm,
@@ -157,7 +201,14 @@ class AnsweringForm extends React.Component {
         <Row style={{ display: "inline-block", textAlign: "left" }}>
           <Col flex={1}>{this.format_options()}</Col>
         </Row>
-        {this.submitButton()}
+        <Row>
+          <Col flex={1}>{this.submitButton()}</Col>
+        </Row>
+        <Row>
+          <Col flex={55} />
+          <Col flex={1}>{this.displayCaptcha()}</Col>
+          <Col flex={55} />
+        </Row>
       </Form>
     );
   };

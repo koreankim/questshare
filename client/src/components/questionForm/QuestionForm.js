@@ -10,25 +10,28 @@ import {
   Form,
   Input,
   Radio,
+  Switch,
 } from "antd";
 import {
   MinusCircleOutlined,
   PlusOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-import { CopyOutlined } from "@ant-design/icons";
+import { CopyOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { sendDataWithOptions } from "../../utils/api/Api";
 import { openNotification } from "../../modal/notification/Notification";
 
 const CONFIG = require("../../config.json");
-const DEFAULT_SECURITY_TYPE = 2
+
+const DEFAULT_SECURITY_TYPE = CONFIG["ip_specific_security_type"];
 
 class QuestionForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      securityType: DEFAULT_SECURITY_TYPE,
+      recaptcha: false,
+      re_disabled: false,
     };
   }
 
@@ -197,49 +200,87 @@ class QuestionForm extends React.Component {
 
   votingSecurityTypeSelectionMenu = () => {
     const onChange = (e) => {
-      this.setState({
-        securityType: e.target.value,
-      });
+      if (e.target.value === CONFIG["unlimited_security_type"]) {
+        this.setState({
+          recaptcha: true,
+          re_disabled: true,
+        });
+      } else {
+        this.setState({
+          re_disabled: false,
+        });
+      }
     };
 
     const SECURITY_TOOLTIP_MSG =
       "Security types determine how often and in what way the users can respond to your quesiton.";
     const UNLIMITED_TOOLTIP_SECURITY_MSG =
-      "Selecting this will require users to validate they are human before submission.";
+      "Selecting this will automatically enable captcha.";
 
     return (
-      <Row>
-        <Col flex={1}>
-          <Form.Item
-            name="securityType"
-            required={true}
-            label={
-              <span>
-                <strong>Security Type</strong>
-                <Tooltip title={SECURITY_TOOLTIP_MSG}>
-                  {" "}
-                  <InfoCircleOutlined />
-                </Tooltip>
-              </span>
-            }
-            rules={[
-              {
-                required: true,
-                message: "Please select a security type!",
-              },
-            ]}
-          >
-            <Radio.Group
-              onChange={onChange}
-            >
-              <Tooltip title={UNLIMITED_TOOLTIP_SECURITY_MSG}>
-                <Radio value={1}>Unlimited</Radio>
+      <Col flex={1}>
+        <Form.Item
+          name="securityType"
+          required={true}
+          label={
+            <span>
+              <strong>Security Type</strong>
+              <Tooltip title={SECURITY_TOOLTIP_MSG}>
+                {" "}
+                <InfoCircleOutlined />
               </Tooltip>
-              <Radio value={2}>IP Specific</Radio>
-            </Radio.Group>
-          </Form.Item>
-        </Col>
-      </Row>
+            </span>
+          }
+          rules={[
+            {
+              required: true,
+              message: "Please select a security type!",
+            },
+          ]}
+        >
+          <Radio.Group onChange={onChange}>
+            <Tooltip title={UNLIMITED_TOOLTIP_SECURITY_MSG}>
+              <Radio value={1}>Unlimited</Radio>
+            </Tooltip>
+            <Radio value={2}>IP Specific</Radio>
+          </Radio.Group>
+        </Form.Item>
+      </Col>
+    );
+  };
+
+  recaptchaSelectionMenu = () => {
+    const onChange = (checked) => {
+      this.setState({
+        recaptcha: checked,
+      });
+    };
+
+    const RECAPTCHA_TOOLTIP_MSG =
+      "If this is enabled, users will be required to complete a captcha before submitting their response.";
+
+    return (
+      <Col flex={1}>
+        <Form.Item
+          name="recaptcha"
+          required={true}
+          label={
+            <span>
+              <strong>CAPTCHA</strong>
+            </span>
+          }
+        >
+          <Tooltip title={RECAPTCHA_TOOLTIP_MSG}>
+            <Switch
+              onChange={onChange}
+              checkedChildren={<CheckOutlined />}
+              unCheckedChildren={<CloseOutlined />}
+              checked={this.state.recaptcha}
+              disabled={this.state.re_disabled}
+            />
+          </Tooltip>
+        </Form.Item>
+      </Col>
     );
   };
 
@@ -260,12 +301,19 @@ class QuestionForm extends React.Component {
 
   displayQuestionForm = () => {
     const onCancel = (form) => {
+      this.setState({
+        recaptcha: false,
+        re_disabled: false,
+      });
       form.current.resetFields();
       this.props.visibilityHandler(false);
     };
 
     const onCreate = (values) => {
-      console.log(values)
+      // This is required because the security type automatically switches 
+      // the captcha requirement and that change doesn't propagate
+      values["recaptcha"] = this.state.recaptcha;
+
       const requestOptions = {
         method: "POST",
         headers: {
@@ -276,6 +324,7 @@ class QuestionForm extends React.Component {
           options: values["options"],
           disableTime: values["disableTime"],
           securityType: values["securityType"],
+          recaptcha: values["recaptcha"],
         }),
       };
       sendDataWithOptions("/createquestion", requestOptions)
@@ -301,8 +350,12 @@ class QuestionForm extends React.Component {
       this.formRef.current
         .validateFields()
         .then((values) => {
-          this.formRef.current.resetFields();
           onCreate(values);
+          this.formRef.current.resetFields();
+          this.setState({
+            recaptcha: false,
+            re_disabled: false,
+          });
         })
         .catch((info) => {
           console.log("Validate Failed:", info); //Get rid of later
@@ -324,11 +377,19 @@ class QuestionForm extends React.Component {
           onOk(onCreate);
         }}
       >
-        <Form ref={this.formRef} layout="vertical" name="question_form">
+        <Form
+          ref={this.formRef}
+          layout="vertical"
+          name="question_form"
+          initialValues={{ securityType: DEFAULT_SECURITY_TYPE }}
+        >
           {this.questionTopicSet()}
           <Divider>Configurations</Divider>
           {this.expirationSelectMenu()}
-          {this.votingSecurityTypeSelectionMenu()}
+          <Row>
+            {this.votingSecurityTypeSelectionMenu()}
+            {this.recaptchaSelectionMenu()}
+          </Row>
           <Divider>Response Options</Divider>
           {this.dynamicFieldSet()}
         </Form>
