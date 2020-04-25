@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Tooltip } from "antd";
-import { CreateQuestionButton } from "../../modal/questionForm/QuestionForm";
+import CreateQuestionButton  from "../buttons/CreateQuestionButton";
 
 class CreateQuestion extends React.Component {
   TOOLTIP_MSG =
