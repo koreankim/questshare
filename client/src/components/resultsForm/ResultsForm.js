@@ -31,22 +31,6 @@ class ResultsForm extends React.Component {
     }
   };
 
-  confGraphOptions = (title, options) => {
-    return {
-      title: {
-        text: title,
-      },
-      data: [
-        {
-          type: "pie",
-          showInLegend: true,
-          legendText: "{label}",
-          dataPoints: options,
-        },
-      ],
-    };
-  };
-
   displayEmptyResults = () => {
     return (
       <div>
@@ -62,6 +46,42 @@ class ResultsForm extends React.Component {
     );
   };
 
+  confGraphOptionsWithLegend = (title, type, options, legend) => {
+    return {
+      title: {
+        text: title,
+      },
+      data: [
+        {
+          type: type,
+          showInLegend: true,
+          legendText: legend,
+          dataPoints: options,
+        },
+      ],
+    };
+  };
+
+  confGraphOptions = (title, type, options) => {
+    return {
+      title: {
+        text: title,
+      },
+      axisY: {
+        interval: 1,
+      },
+      axisX: {
+        interval: 1,
+      },
+      data: [
+        {
+          type: type,
+          dataPoints: options,
+        },
+      ],
+    };
+  };
+
   getPieChartData = () => {
     let table = [];
     let options = this.props.q_data["_options"];
@@ -70,6 +90,21 @@ class ResultsForm extends React.Component {
       let obj = {
         label: options[i]["text"],
         indexLabel: "Choice " + options[i]["choice"],
+        y: options[i]["votes"],
+      };
+      table.push(obj);
+    }
+
+    return table;
+  };
+
+  getBarChartData = () => {
+    let table = [];
+    let options = this.props.q_data["_options"];
+
+    for (let i = 0; i < options.length; i++) {
+      let obj = {
+        label: "Choice " + options[i]["choice"],
         y: options[i]["votes"],
       };
       table.push(obj);
@@ -101,7 +136,20 @@ class ResultsForm extends React.Component {
             <CanvasJSChart
               options={this.confGraphOptions(
                 "Vote Spread",
-                this.getPieChartData()
+                "bar",
+                this.getBarChartData()
+              )}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col flex={1}>
+            <CanvasJSChart
+              options={this.confGraphOptionsWithLegend(
+                "",
+                "pie",
+                this.getPieChartData(),
+                "{label}"
               )}
             />
           </Col>

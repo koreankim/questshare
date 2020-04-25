@@ -5,7 +5,7 @@ import CreateQuestionButton from "../buttons/CreateQuestionButton";
 
 class CreateQuestion extends React.Component {
   TOOLTIP_MSG =
-    "Your question wlil automatically be deleted after 3 days. This means that it will no longer be accessible after this period.";
+    "Your question wlil automatically be deleted after 24 hours. This means that it will no longer be accessible after this period.";
 
   displayCreateButton = () => {
     return (
@@ -13,7 +13,7 @@ class CreateQuestion extends React.Component {
         <Row>
           <Col flex={1}>
             <strong>Reminder</strong>: All questions automatically expire after{" "}
-            <strong>3</strong> days{" "}
+            <strong>1</strong> day{" "}
             <Tooltip title={this.TOOLTIP_MSG}>
               <InfoCircleOutlined />
             </Tooltip>

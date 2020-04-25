@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 main = Blueprint('main', __name__)
 
 UUID_LENGTH = 36
-THREE_DAYS_IN_SECONDS = 259200
+ONE_DAY_IN_SECONDS = 86400
 
 
 @main.route('/createquestion', methods=['POST'])
@@ -92,7 +92,7 @@ def ttl_collection():
     question_collection = mongo.db.questions
     if index_name not in question_collection.index_information():
         question_collection.create_index(
-            "_createdAt", expireAfterSeconds=THREE_DAYS_IN_SECONDS)
+            "_createdAt", expireAfterSeconds=ONE_DAY_IN_SECONDS)
 
 
 def uuid_check(uuid):

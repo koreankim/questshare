@@ -6,22 +6,26 @@ import { Layout, Menu } from "antd";
 const { Header } = Layout;
 
 class Navbar extends React.Component {
-
   handleClick(path) {
     this.props.history.push(path);
   }
 
   render() {
     return (
-      <Header>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-        >
-          <Menu.Item key="1" onClick={(e) => this.handleClick("/")}>
+      <Header style={{ textAlign: "center" }}>
+        <Menu theme="dark" mode="horizontal">
+          <Menu.Item
+            style={{ color: "#f0f8ff" }}
+            key="1"
+            onClick={(e) => this.handleClick("/")}
+          >
             Home
           </Menu.Item>
-          <Menu.Item key="2" onClick={(e) => this.handleClick("/create")}>
+          <Menu.Item
+            style={{ color: "#f0f8ff" }}
+            key="2"
+            onClick={(e) => this.handleClick("/create")}
+          >
             Create Question
           </Menu.Item>
         </Menu>

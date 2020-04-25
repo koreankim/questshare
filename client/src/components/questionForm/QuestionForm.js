@@ -17,7 +17,7 @@ import {
   PlusOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-import { CopyOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { CopyOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { sendDataWithOptions } from "../../utils/api/Api";
 import { openNotification } from "../../modal/notification/Notification";
@@ -263,7 +263,6 @@ class QuestionForm extends React.Component {
       <Col flex={1}>
         <Form.Item
           name="recaptcha"
-          required={true}
           label={
             <span>
               <strong>CAPTCHA</strong>
@@ -273,8 +272,8 @@ class QuestionForm extends React.Component {
           <Tooltip title={RECAPTCHA_TOOLTIP_MSG}>
             <Switch
               onChange={onChange}
-              checkedChildren={<CheckOutlined />}
-              unCheckedChildren={<CloseOutlined />}
+              checkedChildren={<LockOutlined />}
+              unCheckedChildren={<UnlockOutlined />}
               checked={this.state.recaptcha}
               disabled={this.state.re_disabled}
             />
