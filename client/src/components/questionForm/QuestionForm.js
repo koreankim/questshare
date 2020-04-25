@@ -37,6 +37,66 @@ class QuestionForm extends React.Component {
     );
   };
 
+  displayInputFields = (fields, field, remove) => {
+    return (
+      <Form.Item required={true} key={field.key}>
+        <Form.Item
+          {...field}
+          validateTrigger={["onChange", "onBlur"]}
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              max: CONFIG["max_options_input_length"],
+              message: "Invalid inputs for option!",
+            },
+          ]}
+          noStyle
+        >
+          <Input
+            placeholder="option (max 100 characters)"
+            style={{ width: "80%" }}
+          />
+        </Form.Item>
+        {fields.length > 1 ? (
+          <MinusCircleOutlined
+            className="dynamic-delete-button"
+            style={{ margin: "0 8px" }}
+            onClick={() => {
+              remove(field.name);
+            }}
+          />
+        ) : null}
+      </Form.Item>
+    );
+  };
+
+  displayAddInputFieldButton = (fields, add) => {
+    return (
+      <Form.Item>
+        <Button
+          type="dashed"
+          onClick={() => {
+            if (fields.length >= CONFIG["free_tier_max_options"]) {
+              openNotification(
+                "Too many options!",
+                "You may only have (" +
+                  CONFIG["free_tier_max_options"] +
+                  ") options per question.",
+                3
+              );
+              return;
+            }
+            add();
+          }}
+          style={{ width: "60%" }}
+        >
+          <PlusOutlined /> Add Option
+        </Button>
+      </Form.Item>
+    );
+  };
+
   dynamicFieldSet = () => {
     return (
       <Row style={{ textAlign: "center" }}>
@@ -45,58 +105,10 @@ class QuestionForm extends React.Component {
             {(fields, { add, remove }) => {
               return (
                 <div>
-                  {fields.map((field, index) => (
-                    <Form.Item required={true} key={field.key}>
-                      <Form.Item
-                        {...field}
-                        validateTrigger={["onChange", "onBlur"]}
-                        rules={[
-                          {
-                            required: true,
-                            whitespace: true,
-                            max: CONFIG["max_options_input_length"],
-                            message: "Invalid inputs for option!",
-                          },
-                        ]}
-                        noStyle
-                      >
-                        <Input
-                          placeholder="option (max 100 characters)"
-                          style={{ width: "80%" }}
-                        />
-                      </Form.Item>
-                      {fields.length > 1 ? (
-                        <MinusCircleOutlined
-                          className="dynamic-delete-button"
-                          style={{ margin: "0 8px" }}
-                          onClick={() => {
-                            remove(field.name);
-                          }}
-                        />
-                      ) : null}
-                    </Form.Item>
-                  ))}
-                  <Form.Item>
-                    <Button
-                      type="dashed"
-                      onClick={() => {
-                        if (fields.length >= CONFIG["free_tier_max_options"]) {
-                          openNotification(
-                            "Too many options!",
-                            "You may only have (" +
-                              CONFIG["free_tier_max_options"] +
-                              ") options per question.",
-                            3
-                          );
-                          return;
-                        }
-                        add();
-                      }}
-                      style={{ width: "60%" }}
-                    >
-                      <PlusOutlined /> Add Option
-                    </Button>
-                  </Form.Item>
+                  {fields.map((field, index) =>
+                    this.displayInputFields(fields, field, remove)
+                  )}
+                  {this.displayAddInputFieldButton(fields, add)}
                 </div>
               );
             }}
@@ -218,7 +230,7 @@ class QuestionForm extends React.Component {
     };
 
     return (
-      <Modal 
+      <Modal
         visible={this.props.visible}
         title="Create a New Question"
         okText="Create"
