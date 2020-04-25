@@ -15,6 +15,7 @@ class Form extends React.Component {
     this.state = {
       loading: true,
       disabled: false,
+      securityType: 2,
       q_data: {},
       uuid: 0,
       ip: 0,

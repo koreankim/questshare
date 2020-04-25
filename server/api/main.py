@@ -17,12 +17,7 @@ def create_question():
 
     data = request.get_json()
 
-    upd_data = []
-    index = 0
-    for d in data['options']:
-        obj = {"choice": index, "text": d, "votes": 0}
-        index += 1
-        upd_data.append(obj)
+    options = format_options(data)
 
     uuidGen = uuid4()
 
@@ -31,10 +26,11 @@ def create_question():
 
     question_collection.insert_one({
         '_question': data['question'],
-        '_options': upd_data,
+        '_options': options,
         '_uuid': uuidGen,
         '_totalVotes': int('0'),
         '_disableTime': disableTime,
+        '_securityType': data['securityType'],
         '_voters': [],
         '_createdAt': datetime.utcnow(),
     })
@@ -82,7 +78,7 @@ def inc_question_option():
             '_totalVotes': 1
         },
         "$addToSet": {
-            "_voters" : ip
+            "_voters": ip
         }
     })
 
@@ -105,3 +101,13 @@ def uuid_check(uuid):
         new_uuid = UUID(uuid)
 
     return new_uuid
+
+
+def format_options(data):
+    upd_data = []
+    index = 0
+    for d in data['options']:
+        obj = {"choice": index, "text": d, "votes": 0}
+        index += 1
+        upd_data.append(obj)
+    return upd_data

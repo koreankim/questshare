@@ -4,6 +4,8 @@ import { sendDataWithOptions } from "../../utils/api/Api";
 
 const { Countdown } = Statistic;
 
+const CONFIG = require("../../config.json");
+
 class AnsweringForm extends React.Component {
   constructor(props) {
     super(props);
@@ -33,9 +35,15 @@ class AnsweringForm extends React.Component {
   };
 
   format_options = () => {
+    const onChange = (e) => {
+      this.setState({
+        value: e.target.value,
+      });
+    };
+
     return (
       <Form.Item
-        onChange={this.onChange}
+        onChange={onChange}
         value={this.state.value}
         rules={[
           {
@@ -71,58 +79,17 @@ class AnsweringForm extends React.Component {
     return table;
   };
 
-  onChange = (e) => {
-    this.setState({
-      value: e.target.value,
-    });
-  };
-
-  onFinish = (values) => {
-    this.setState({
-      disabled: true,
-      submitting: true,
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        choice: this.state.value,
-        ip: this.props.ip,
-        uuid: this.props.uuid,
-      }),
-    };
-
-    sendDataWithOptions("/questions/submit", requestOptions)
-      .then(() => {
-        this.setState({
-          submitting: false,
-        });
-      })
-      .catch((error) => {
-        console.error("There was an error submitting your response!", error);
-      });
-  };
-
-  onTimerFinish = () => {
-    this.setState({
-      disabled: true,
-    });
-    this.props.disableHandler();
-  };
-
   componentDidMount = () => {
-    let current = new Date().getTime();
-    let didCurrentUserVoteAlready = this.props.q_data["_voters"].includes(
+    const current = new Date().getTime();
+    const disableTimeReached =
+      current > this.props.q_data["_disableTime"]["$date"];
+    const userAlreadyVoted = this.props.q_data["_voters"].includes(
       this.props.ip
     );
+    const isVotingSecurityEnabled =
+      this.props.q_data["_securityType"] != CONFIG["unlimited_security_type"];
 
-    if (
-      current > this.props.q_data["_disableTime"]["$date"] ||
-      didCurrentUserVoteAlready
-    ) {
+    if (disableTimeReached || (isVotingSecurityEnabled && userAlreadyVoted)) {
       this.setState({
         disabled: true,
       });
@@ -150,11 +117,40 @@ class AnsweringForm extends React.Component {
   };
 
   format_form = () => {
+    const onFinish = (values) => {
+      const disableForm =
+        this.props.q_data["_securityType"] != CONFIG["unlimited_security_type"];
+
+      this.setState({
+        disabled: disableForm,
+        submitting: true,
+      });
+
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          choice: this.state.value,
+          ip: this.props.ip,
+          uuid: this.props.uuid,
+        }),
+      };
+
+      sendDataWithOptions("/questions/submit", requestOptions)
+        .then(() => {
+          this.setState({
+            submitting: false,
+          });
+        })
+        .catch((error) => {
+          console.error("There was an error submitting your response!", error);
+        });
+    };
+
     return (
-      <Form
-        name="submission_form"
-        onFinish={this.onFinish}
-      >
+      <Form name="submission_form" onFinish={onFinish}>
         <Row>
           <Col flex={1}>{this.format_question()}</Col>
         </Row>
@@ -166,6 +162,13 @@ class AnsweringForm extends React.Component {
     );
   };
 
+  onTimerFinish = () => {
+    this.setState({
+      disabled: true,
+    });
+    this.props.disableHandler();
+  };
+
   render() {
     return (
       <div style={{ textAlign: "center" }}>
@@ -174,7 +177,7 @@ class AnsweringForm extends React.Component {
           value={this.props.q_data["_disableTime"]["$date"]}
           onFinish={this.onTimerFinish}
         />
-        <Divider/>
+        <Divider />
         {this.format_form()}
       </div>
     );
