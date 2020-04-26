@@ -8,6 +8,8 @@ import Error from "../error/Error";
 
 const { TabPane } = Tabs;
 
+const CONFIG = require("../../config.json");
+
 class Form extends React.Component {
   constructor(props) {
     super(props);
@@ -37,27 +39,33 @@ class Form extends React.Component {
       loading: true,
     });
 
-    fetchIP()
-      .then((ip_d) => {
+    sendData("/questions/" + uuid)
+      .then((data) => {
         this.setState({
-          ip: ip_d,
+          q_data: JSON.parse(data),
+          uuid: uuid,
         });
       })
       .then(() => {
-        sendData("/questions/" + uuid)
-          .then((data) => {
-            this.setState({
-              q_data: JSON.parse(data),
-              uuid: uuid,
-              loading: false,
+        if (this.state.q_data["_securityType"] === CONFIG["ip_specific_security_type"]) {
+          fetchIP()
+            .then((ip_d) => {
+              this.setState({
+                ip: ip_d,
+              });
+            })
+            .catch((error) => {
+              console.error("There was an error fetching the IP!", error);
             });
-          })
-          .catch((error) => {
-            console.error("There was an error fetching the question!", error);
-          });
+        }
+      })
+      .then(() => {
+        this.setState({
+          loading: false,
+        });
       })
       .catch((error) => {
-        console.error("There was an error fetching the IP!", error);
+        console.error("There was an error fetching the question!", error);
       });
   };
 
