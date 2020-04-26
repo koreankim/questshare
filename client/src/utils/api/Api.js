@@ -32,5 +32,5 @@ export const fetchIP = async () => {
     return Promise.reject(error);
   }
 
-  return data["geoplugin_request"];
+  return data["ip"];
 };

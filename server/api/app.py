@@ -1,17 +1,24 @@
-from flask import Blueprint, jsonify, request
+import os
+from flask import jsonify, request, Flask
+from flask_cors import CORS
+from flask_pymongo import PyMongo
 from bson.json_util import dumps
-
+from api.config import Config
 from uuid import uuid4, UUID
-from .extensions import mongo
 from datetime import datetime, timedelta
 
-main = Blueprint('main', __name__)
+app = Flask(__name__)
+app.config.from_object(Config)
+CORS(app)
+
+mongo = PyMongo()
+mongo.init_app(app)
 
 UUID_LENGTH = 36
 ONE_DAY_IN_SECONDS = 86400
 
 
-@main.route('/createquestion', methods=['POST'])
+@app.route('/createquestion', methods=['POST'])
 def create_question():
     question_collection = mongo.db.questions
 
@@ -39,7 +46,7 @@ def create_question():
     return jsonify(uuidGen)
 
 
-@main.route('/questions', methods=['GET'])
+@app.route('/questions', methods=['GET'])
 def get_questions():
     question_collection = mongo.db.questions
 
@@ -48,7 +55,7 @@ def get_questions():
     return data
 
 
-@main.route('/questions/<uuid>', methods=['GET'])
+@app.route('/questions/<uuid>', methods=['GET'])
 def get_question(uuid):
     question_collection = mongo.db.questions
 
@@ -59,7 +66,7 @@ def get_question(uuid):
     return jsonify(data)
 
 
-@main.route('/questions/submit', methods=['POST'])
+@app.route('/questions/submit', methods=['POST'])
 def inc_question_option():
     question_collection = mongo.db.questions
 
@@ -86,7 +93,7 @@ def inc_question_option():
     return jsonify("201, done")
 
 
-@main.before_request
+@app.before_request
 def ttl_collection():
     index_name = "_createdAt"
     question_collection = mongo.db.questions
