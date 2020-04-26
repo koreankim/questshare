@@ -4,7 +4,7 @@ import { Row, Col, Card, Divider } from "antd";
 class Home extends React.Component {
   displayQuestShareTopic = () => {
     return (
-      <Col flex={3} style={{ margin: "5px" }}>
+      <Col flex={1} style={{ margin: "5px" }}>
         <Card>
           <strong>What is QuestShare?</strong>
           <div>
@@ -22,7 +22,7 @@ class Home extends React.Component {
 
   displayQuestShareUse = () => {
     return (
-      <Col flex={3} style={{ margin: "5px" }}>
+      <Col flex={1} style={{ margin: "5px" }}>
         <Card>
           <strong>Why should I use it?</strong>
           <div>
@@ -51,7 +51,7 @@ class Home extends React.Component {
 
   displayCreatorGithub = () => {
     return (
-      <Col flex={1} style={{ overflowWrap: "break-word",  margin: "5px" }}>
+      <Col flex={1} style={{ overflowWrap: "break-word", margin: "5px" }}>
         <Card hoverable style={{ width: "fill" }} title="GitHub">
           <p>https://github.com/koreankim</p>
         </Card>
@@ -62,11 +62,36 @@ class Home extends React.Component {
   displayIntroduction = () => {
     return (
       <div style={{ textAlign: "center" }}>
+        <Row>{this.displayQuestShareTopic()}</Row>
         <Row>
-          {this.displayQuestShareTopic()}
-          {this.displayQuestShareUse()}
+          <Col flex={1}>
+            <Card>
+              <img
+                src={require("../../assets/answeringform.png")}
+                style={{ maxWidth: "100%" }}
+                alt="answeringform"
+                width="auto"
+                height="450"
+              />
+            </Card>
+          </Col>
+          <Col flex={1}>
+            <Card>
+              <img
+                src={require("../../assets/results.png")}
+                style={{ maxWidth: "100%" }}
+                alt="answeringform"
+                width="auto"
+                height="450"
+              />
+            </Card>
+          </Col>
         </Row>
-        <Card><Divider>About the Creator</Divider></Card>
+        <Row>{this.displayQuestShareUse()}</Row>
+
+        <Card>
+          <Divider>About the Creator</Divider>
+        </Card>
         <Row>
           {this.displayCreatorLinkedin()}
           {this.displayCreatorGithub()}

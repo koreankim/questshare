@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Spin } from "antd";
+import { Card, Tabs, Spin } from "antd";
 import { QuestionCircleOutlined, BarChartOutlined } from "@ant-design/icons";
 import AnsweringForm from "../answeringForm/AnsweringForm";
 import ResultsForm from "../resultsForm/ResultsForm";
@@ -12,7 +12,7 @@ class Form extends React.Component {
   constructor(props) {
     super(props);
     this.disableHandler = this.disableHandler.bind(this);
-    this.fetchData = this.fetchData.bind(this)
+    this.fetchData = this.fetchData.bind(this);
     this.state = {
       loading: true,
       disabled: false,
@@ -35,7 +35,7 @@ class Form extends React.Component {
 
     this.setState({
       loading: true,
-    })
+    });
 
     fetchIP()
       .then((ip_d) => {
@@ -78,40 +78,50 @@ class Form extends React.Component {
 
     const onChange = (e) => {
       this.setState({
-        activeTab: e
-      })
-    }
+        activeTab: e,
+      });
+    };
 
     return (
-      <Tabs style={{textAlign: "center"}} defaultActiveKey={this.state.activeTab} onChange={onChange}>
-        <TabPane
-          tab={
-            <span>
-              <QuestionCircleOutlined />
-              Question
-            </span>
-          }
-          key="1"
+      <Card>
+        <Tabs
+          style={{ textAlign: "center" }}
+          defaultActiveKey={this.state.activeTab}
+          onChange={onChange}
         >
-          <AnsweringForm
-            q_data={this.state.q_data}
-            uuid={this.state.uuid}
-            disableHandler={this.disableHandler}
-            ip={this.state.ip}
-          />
-        </TabPane>
-        <TabPane
-          tab={
-            <span>
-              <BarChartOutlined />
-              Results
-            </span>
-          }
-          key="2"
-        >
-          <ResultsForm q_data={this.state.q_data} fetchData={this.fetchData} loading={this.state.loading}/>
-        </TabPane>
-      </Tabs>
+          <TabPane
+            tab={
+              <span>
+                <QuestionCircleOutlined />
+                Question
+              </span>
+            }
+            key="1"
+          >
+            <AnsweringForm
+              q_data={this.state.q_data}
+              uuid={this.state.uuid}
+              disableHandler={this.disableHandler}
+              ip={this.state.ip}
+            />
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <BarChartOutlined />
+                Results
+              </span>
+            }
+            key="2"
+          >
+            <ResultsForm
+              q_data={this.state.q_data}
+              fetchData={this.fetchData}
+              loading={this.state.loading}
+            />
+          </TabPane>
+        </Tabs>
+      </Card>
     );
   };
 
