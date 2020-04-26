@@ -22,8 +22,9 @@ class CreateQuestionButton extends React.Component {
     return (
       <div>
         <Button
-          style={{ margin: "25px 0px" }}
+          style={{ margin: "25px 0px"}}
           type="primary"
+          size="large"
           onClick={() => {
             this.visibilityHandler(true);
           }}

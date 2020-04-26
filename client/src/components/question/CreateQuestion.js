@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Tooltip } from "antd";
+import { Row, Col, Tooltip, Card } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import CreateQuestionButton from "../buttons/CreateQuestionButton";
 
@@ -9,21 +9,23 @@ class CreateQuestion extends React.Component {
 
   displayCreateButton = () => {
     return (
-      <div style={{ fontSize: "16px", textAlign: "center" }}>
-        <Row>
-          <Col flex={1}>
-            <strong>Reminder</strong>: All questions automatically expire after{" "}
-            <strong>1</strong> day{" "}
-            <Tooltip title={this.TOOLTIP_MSG}>
-              <InfoCircleOutlined />
-            </Tooltip>
-          </Col>
-        </Row>
-        <Row>
-          <Col flex={1}>
-            <CreateQuestionButton />
-          </Col>
-        </Row>
+      <div style={{ textAlign: "center" }}>
+        <Card>
+          <Row>
+            <Col flex={1}>
+              <strong>Reminder</strong>: All questions automatically expire
+              after <strong>1</strong> day{" "}
+              <Tooltip title={this.TOOLTIP_MSG}>
+                <InfoCircleOutlined />
+              </Tooltip>
+            </Col>
+          </Row>
+          <Row>
+            <Col flex={1}>
+              <CreateQuestionButton />
+            </Col>
+          </Row>
+        </Card>
       </div>
     );
   };

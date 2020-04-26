@@ -1,36 +1,75 @@
 import React from "react";
-import { Row, Col } from "antd";
+import { Row, Col, Card, Divider } from "antd";
 
 class Home extends React.Component {
+  displayQuestShareTopic = () => {
+    return (
+      <Col flex={3} style={{ margin: "5px" }}>
+        <Card>
+          <strong>What is QuestShare?</strong>
+          <div>
+            QuestShare is a UI-friendly lightweight solution for polling
+            momentary feedback.
+          </div>
+          <div>
+            It provides meaningful results and automatically filters polls after
+            its expiration period.
+          </div>
+        </Card>
+      </Col>
+    );
+  };
+
+  displayQuestShareUse = () => {
+    return (
+      <Col flex={3} style={{ margin: "5px" }}>
+        <Card>
+          <strong>Why should I use it?</strong>
+          <div>
+            QuestShare provides users with strong security measures to ensure
+            your polls are safeguarded from malicious attacks.
+          </div>
+          <div>
+            The creation menu provides selections between unlimited and IP
+            specific security options and the ability to enable captcha
+            protection to prevent spam.
+          </div>
+        </Card>
+      </Col>
+    );
+  };
+
+  displayCreatorLinkedin = () => {
+    return (
+      <Col flex={1} style={{ overflowWrap: "break-word", margin: "5px" }}>
+        <Card hoverable title="Linkedin">
+          <p>https://www.linkedin.com/in/junhokim97/</p>
+        </Card>
+      </Col>
+    );
+  };
+
+  displayCreatorGithub = () => {
+    return (
+      <Col flex={1} style={{ overflowWrap: "break-word",  margin: "5px" }}>
+        <Card hoverable style={{ width: "fill" }} title="GitHub">
+          <p>https://github.com/koreankim</p>
+        </Card>
+      </Col>
+    );
+  };
+
   displayIntroduction = () => {
     return (
-      <div>
+      <div style={{ textAlign: "center" }}>
         <Row>
-          <Col flex={1}>
-            <strong>What is QuestShare?</strong>
-            <div>
-              QuestShare is a UI-friendly lightweight solution for polling
-              momentary feedback.
-            </div>
-            <div>
-              It provides meaningful results and automatically filters polls
-              after its expiration period.
-            </div>
-          </Col>
+          {this.displayQuestShareTopic()}
+          {this.displayQuestShareUse()}
         </Row>
+        <Card><Divider>About the Creator</Divider></Card>
         <Row>
-          <Col flex={1}>
-            <strong>Why should I use it?</strong>
-            <div>
-              QuestShare provides users with strong security measures to ensure
-              your polls are safeguarded from malicious attacks.
-            </div>
-            <div>
-              The creation menu provides selections between unlimited and IP
-              specific security options and the ability to enable captcha
-              protection to prevent spam.
-            </div>
-          </Col>
+          {this.displayCreatorLinkedin()}
+          {this.displayCreatorGithub()}
         </Row>
       </div>
     );

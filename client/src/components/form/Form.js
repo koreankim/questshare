@@ -8,8 +8,6 @@ import Error from "../error/Error";
 
 const { TabPane } = Tabs;
 
-const TIMEOUT_S = 5000
-
 class Form extends React.Component {
   constructor(props) {
     super(props);
