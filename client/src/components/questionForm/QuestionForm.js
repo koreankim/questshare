@@ -150,7 +150,7 @@ class QuestionForm extends React.Component {
         },
         {
           value: 5,
-          label: "5 minute",
+          label: "5 minutes",
         },
         {
           value: 10,
@@ -162,8 +162,12 @@ class QuestionForm extends React.Component {
         },
         {
           value: 60,
-          label: "60 minutes",
+          label: "1 hour",
         },
+        {
+          value: 180,
+          label: "3 hours"
+        }
       ];
     };
 

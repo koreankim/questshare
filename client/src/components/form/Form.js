@@ -8,14 +8,18 @@ import Error from "../error/Error";
 
 const { TabPane } = Tabs;
 
+const TIMEOUT_S = 5000
+
 class Form extends React.Component {
   constructor(props) {
     super(props);
     this.disableHandler = this.disableHandler.bind(this);
+    this.fetchData = this.fetchData.bind(this)
     this.state = {
       loading: true,
       disabled: false,
       securityType: 2,
+      activeTab: 1,
       q_data: {},
       uuid: 0,
       ip: 0,
@@ -30,6 +34,11 @@ class Form extends React.Component {
 
   fetchData = () => {
     const { uuid } = this.props.match.params;
+
+    this.setState({
+      loading: true,
+    })
+
     fetchIP()
       .then((ip_d) => {
         this.setState({
@@ -54,17 +63,8 @@ class Form extends React.Component {
       });
   };
 
-  componentWillUnmount() {
-    clearInterval(this.keepWatchingData);
-  }
-
   componentDidMount = () => {
     this.fetchData();
-
-    this.keepWatchingData = setInterval(
-      () => (this.state.disabled ? "" : this.fetchData()),
-      5000
-    );
   };
 
   load_tabs = () => {
@@ -78,8 +78,14 @@ class Form extends React.Component {
       return <Error />;
     }
 
+    const onChange = (e) => {
+      this.setState({
+        activeTab: e
+      })
+    }
+
     return (
-      <Tabs style={{textAlign: "center"}} defaultActiveKey="1">
+      <Tabs style={{textAlign: "center"}} defaultActiveKey={this.state.activeTab} onChange={onChange}>
         <TabPane
           tab={
             <span>
@@ -105,7 +111,7 @@ class Form extends React.Component {
           }
           key="2"
         >
-          <ResultsForm q_data={this.state.q_data} />
+          <ResultsForm q_data={this.state.q_data} fetchData={this.fetchData} loading={this.state.loading}/>
         </TabPane>
       </Tabs>
     );

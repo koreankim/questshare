@@ -2,8 +2,7 @@ import React from "react";
 import "./Navbar.css";
 import { withRouter } from "react-router-dom";
 
-import { Layout, Menu, Row } from "antd";
-const { Header } = Layout;
+import { Menu } from "antd";
 
 class Navbar extends React.Component {
   handleClick(path) {

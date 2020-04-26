@@ -1,6 +1,6 @@
 import React from "react";
 import CanvasJSReact from "../../assets/canvasjs.react";
-import { Row, Col, Statistic, Empty, Divider } from "antd";
+import { Row, Col, Button, Statistic, Empty, Divider } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
 
 let CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -42,6 +42,13 @@ class ResultsForm extends React.Component {
         />
         <Divider>Your Meaningful Data</Divider>
         <Empty />
+        <Row style={{marginTop: "30pt"}}>
+          <Col flex={1}>
+            <Button type="primary" loading={this.props.loading} onClick={this.props.fetchData}>
+              Refresh Results
+            </Button>
+          </Col>
+        </Row>
       </div>
     );
   };
@@ -152,6 +159,13 @@ class ResultsForm extends React.Component {
                 "{label}"
               )}
             />
+          </Col>
+        </Row>
+        <Row style={{marginTop: "30pt"}}>
+          <Col flex={1}>
+            <Button type="primary" loading={this.props.loading} onClick={this.props.fetchData}>
+              Refresh Results
+            </Button>
           </Col>
         </Row>
       </div>
