@@ -8,7 +8,7 @@ class Home extends React.Component {
         <Card>
           <strong>What is QuestShare?</strong>
           <div>
-            QuestShare is a UI-friendly lightweight solution for polling
+            QuestShare is a free UI-friendly lightweight solution for polling
             momentary feedback.
           </div>
           <div>
@@ -49,6 +49,35 @@ class Home extends React.Component {
     );
   };
 
+  displayImages = () => {
+    return (
+      <Row>
+        <Col flex={1}>
+          <Card>
+            <img
+              src={require("../../assets/answeringform.png")}
+              style={{ maxWidth: "100%" }}
+              alt="answeringform"
+              width="auto"
+              height="450"
+            />
+          </Card>
+        </Col>
+        <Col flex={1}>
+          <Card>
+            <img
+              src={require("../../assets/results.png")}
+              style={{ maxWidth: "100%" }}
+              alt="answeringform"
+              width="auto"
+              height="450"
+            />
+          </Card>
+        </Col>
+      </Row>
+    );
+  };
+
   displayCreatorGithub = () => {
     return (
       <Col flex={1} style={{ overflowWrap: "break-word", margin: "5px" }}>
@@ -63,30 +92,7 @@ class Home extends React.Component {
     return (
       <div style={{ textAlign: "center" }}>
         <Row>{this.displayQuestShareTopic()}</Row>
-        <Row>
-          <Col flex={1}>
-            <Card>
-              <img
-                src={require("../../assets/answeringform.png")}
-                style={{ maxWidth: "100%" }}
-                alt="answeringform"
-                width="auto"
-                height="450"
-              />
-            </Card>
-          </Col>
-          <Col flex={1}>
-            <Card>
-              <img
-                src={require("../../assets/results.png")}
-                style={{ maxWidth: "100%" }}
-                alt="answeringform"
-                width="auto"
-                height="450"
-              />
-            </Card>
-          </Col>
-        </Row>
+        {this.displayImages()}
         <Row>{this.displayQuestShareUse()}</Row>
 
         <Card>
