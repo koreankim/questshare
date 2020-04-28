@@ -1,0 +1,7 @@
+{
+    "free_tier_max_options": 20,
+    "max_question_input_length": 250,
+    "max_options_input_length": 100,
+    "unlimited_security_type": 1,
+    "ip_specific_security_type": 2
+}

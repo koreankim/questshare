@@ -166,8 +166,8 @@ class QuestionForm extends React.Component {
         },
         {
           value: 180,
-          label: "3 hours"
-        }
+          label: "3 hours",
+        },
       ];
     };
 
@@ -270,18 +270,20 @@ class QuestionForm extends React.Component {
           label={
             <span>
               <strong>CAPTCHA</strong>
+              <Tooltip title={RECAPTCHA_TOOLTIP_MSG}>
+                {" "}
+                <InfoCircleOutlined />
+              </Tooltip>
             </span>
           }
         >
-          <Tooltip title={RECAPTCHA_TOOLTIP_MSG}>
-            <Switch
-              onChange={onChange}
-              checkedChildren={<LockOutlined />}
-              unCheckedChildren={<UnlockOutlined />}
-              checked={this.state.recaptcha}
-              disabled={this.state.re_disabled}
-            />
-          </Tooltip>
+          <Switch
+            onChange={onChange}
+            checkedChildren={<LockOutlined />}
+            unCheckedChildren={<UnlockOutlined />}
+            checked={this.state.recaptcha}
+            disabled={this.state.re_disabled}
+          />
         </Form.Item>
       </Col>
     );
@@ -313,7 +315,7 @@ class QuestionForm extends React.Component {
     };
 
     const onCreate = (values) => {
-      // This is required because the security type automatically switches 
+      // This is required because the security type automatically switches
       // the captcha requirement and that change doesn't propagate
       values["recaptcha"] = this.state.recaptcha;
 

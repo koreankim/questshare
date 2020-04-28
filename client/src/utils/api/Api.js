@@ -1,7 +1,7 @@
 const CONFIG = require("../../config.json");
 
 export const sendDataWithOptions = async (path, requestOptions) => {
-  const response = await fetch(CONFIG["proxy"] + path, requestOptions);
+  const response = await fetch(process.env.REACT_APP_SERVER_PROXY + path, requestOptions);
   const data = await response.json();
   if (!response.ok) {
     // get error message from body or default to response status
@@ -12,7 +12,7 @@ export const sendDataWithOptions = async (path, requestOptions) => {
 };
 
 export const sendData = async (path) => {
-  const response = await fetch(CONFIG["proxy"] + path);
+  const response = await fetch(process.env.REACT_APP_SERVER_PROXY + path);
   const data = await response.json();
   if (!response.ok) {
     // get error message from body or default to response status
@@ -23,7 +23,7 @@ export const sendData = async (path) => {
 };
 
 export const fetchIP = async () => {
-  const response = await fetch(CONFIG["ip_identifier"]);
+  const response = await fetch(process.env.REACT_APP_IP_PROXY);
   const data = await response.json();
 
   if (!response.ok) {

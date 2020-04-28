@@ -1,6 +1,5 @@
 .env.*
 .env
-api/config.py
 .flaskenv.*
 .flaskenv
 .serverless

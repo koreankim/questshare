@@ -143,7 +143,7 @@ class AnsweringForm extends React.Component {
 
     return (
       <ReCAPTCHA
-        sitekey={CONFIG["google_recaptcha_sitekey"]}
+        sitekey={process.env.REACT_APP_GOOGLE_SITE_KEY}
         onChange={onFinish}
       />
     );
