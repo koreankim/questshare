@@ -1,8 +1,0 @@
-.env.*
-.env
-.flaskenv.*
-.flaskenv
-.serverless
-serverless.*
-node_modules
-__pycache__
